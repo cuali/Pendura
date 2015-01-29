@@ -1,0 +1,15 @@
+<ion-view view-title="Operações para {{nick}} na {{pending}}">
+  <ion-content>
+    <ion-list>
+      <ion-item class="item-remove-animate item-icon-right" ng-repeat="operation in operations()" type="item-text-wrap" href="#/tab/ops/{{operation.vc}}">
+        <div class='row row-center'>
+          <div class='col col-10 button button-clear button-small button-calm'>{{operation.ts}}</div>
+          <div class='col button button-clear button-balanced'>{{operation.from}}</div>
+          <div class='col col-20 button button-large button-clear button-dark'>{{operation.amount / 100 | currency}}</div>
+          <div class='col button button-clear button-energized'>{{operation.to}}</div>
+          <div class='col col-10'><i class="icon ion-heart-broken icon-accessory padding-right"></i></div>
+        </div>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>

@@ -1,0 +1,24 @@
+<!--
+Create tabs with an icon and label, using the tabs-balanced style.
+Each tab's child <ion-nav-view> directive will have its own
+navigation history that also transitions its views in and out.
+-->
+<ion-tabs class="tabs-icon-top tabs-color-active-balanced" ng-controller='SynchCtrl'>
+
+  <ion-tab title="Balanço" icon-off="ion-social-bitcoin-outline" icon-on="ion-social-bitcoin" href="#/tab/dash">
+    <ion-nav-view name="tab-dash"></ion-nav-view>
+  </ion-tab>
+
+  <ion-tab title="Operações" icon-off="ion-document" icon-on="ion-document-text" href="#/tab/ops">
+    <ion-nav-view name="tab-operations"></ion-nav-view>
+  </ion-tab>
+
+  <ion-tab title="Registro" icon-off="ion-clipboard" icon-on="ion-compose" href="#/tab/register">
+    <ion-nav-view name="tab-register"></ion-nav-view>
+  </ion-tab>
+
+  <ion-tab title="Ajustes" icon-off="ion-compass" icon-on="ion-ionic" href="#/tab/account">
+    <ion-nav-view name="tab-account"></ion-nav-view>
+  </ion-tab>
+
+</ion-tabs>
