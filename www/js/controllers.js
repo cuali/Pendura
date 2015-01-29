@@ -14,15 +14,17 @@ angular.module('pendura.controllers', [])
   })
 })
 .controller('OpsCtrl', function($scope, Operations) {
-  $scope.operations = function(){return Operations.mine($scope.pending, $scope.nick)}
+  $scope.operations = Operations.mine($scope.pending, $scope.nick)
+  $scope.$on('NewPendingTransaction', function() {
+    $scope.operations = Operations.mine($scope.pending, $scope.nick)
+  })
 })
-.controller('RegisterCtrl', function($scope, $state, $filter, Operations, Partners) {
-  $scope.partners = function(){return Partners.all($scope.pending, $scope.nick)}
+.controller('RegisterCtrl', function($scope, $state, $filter, Operations) {
+  $scope.partners = function(){return Operations.partners($scope.pending, $scope.nick)}
   $scope.transaction = {}
   $scope.register = function() {
     var ts = $filter('date')(new Date(), "yyyyMMddHHmmss.sss")
-    var operations = Partners.register($scope.pending, $scope.nick, ts, $scope.transaction)
-    Operations.transaction($scope.pending, $scope.nick, operations)
+    Operations.transaction($scope.pending, $scope.nick, ts, $scope.transaction)
     $scope.$emit('NewPendingTransaction')
     $scope.transaction = {}
     $state.go('tab.ops')
@@ -30,6 +32,6 @@ angular.module('pendura.controllers', [])
 })
 .controller('AccountCtrl', function($scope) {
   $scope.settings = {
-    enableFriends: true
+    checkFriends: true
   }
 })
