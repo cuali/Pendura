@@ -20,7 +20,7 @@ angular.module('pendura.controllers', [])
   })
 })
 .controller('RegisterCtrl', function($scope, $state, $filter, Operations) {
-  $scope.partners = function(){return Operations.partners($scope.pending, $scope.nick)}
+  $scope.partners = Operations.partners($scope.pending, $scope.nick)
   $scope.transaction = {}
   $scope.register = function() {
     var ts = $filter('date')(new Date(), "yyyyMMddHHmmss.sss")

@@ -2,64 +2,76 @@ angular.module('pendura.services', [])
 
 .factory('Operations', function() {
   // Some fake testing data
+  var selfie = {nick:'Alain',tick:1}
   var partners = {
-    'tupi': ['Alain','Marcos'],
-    'verde': ['Alain','Alano','Marcos','Neto']
+    'tupi': [{nick:'Alain',tick:0},{nick:'Marcos',tick:1}],
+    'verde': [{nick:'Alain',tick:1},{nick:'Alano',tick:1},{nick:'Marcos',tick:1},{nick:'Neto',tick:0}]
   }
   var operations = {
     'tupi' : [{
       ts: '20150128191225.123',
+      tid: 'Marcos¦1',
       from: 'Marcos',
       to: 'Tupi',
       amount: 5042
     }, {
       ts: '20150128191225.123',
+      tid: 'Marcos¦1',
       from: 'Tupi',
       to: 'Alain',
       amount: 5042
     }],
     'verde' : [{
       ts: '20150125131225.123',
+      tid: 'Marcos¦1',
       from: 'Verde',
       to: 'Alain',
       amount: 1042
     }, {
       ts: '20150125131225.123',
+      tid: 'Marcos¦1',
       from: 'Verde',
       to: 'Neto',
       amount: 500
     }, {
       ts: '20150125131225.123',
+      tid: 'Marcos¦1',
       from: 'Marcos',
       to: 'Verde',
       amount: 1542
     }, {
       ts: '20150123131225.234',
+      tid: 'Alano¦1',
       from: 'Verde',
       to: 'Alain',
       amount: 482
     }, {
       ts: '20150123131225.234',
+      tid: 'Alano¦1',
       from: 'Verde',
       to: 'Marcos',
       amount: 848
     }, {
       ts: '20150123131225.234',
+      tid: 'Alano¦1',
       from: 'Alano',
       to: 'Verde',
       amount: 1330
     }, {
       ts: '20150121131225.345',
+      tid: 'Alain¦1',
       from: 'Verde',
       to: 'Neto',
       amount: 1200
     }, {
       ts: '20150121131225.345',
+      tid: 'Alain¦1',
       from: 'Verde',
       to: 'Alano',
       amount: 300
     }, {
       ts: '20150121131225.345',
+      tid: 'Alain¦1',
       from: 'Alain',
       to: 'Verde',
       amount: 1500
@@ -132,8 +144,8 @@ angular.module('pendura.services', [])
     return merged
   }
 
-  var operation = function(ts, creditor, amount, debitor) {
-    return (amount>0) ? {ts: ts, from: creditor, amount: amount, to: debitor} : {ts: ts, from: debitor, amount: amount, to: creditor}
+  var operation = function(tid, ts, creditor, amount, debitor) {
+    return (amount>0) ? {ts: ts, tid: tid, from: creditor, amount: amount, to: debitor} : {ts: ts, tid: tid, from: debitor, amount: amount, to: creditor}
   }
 
   return {
@@ -152,30 +164,31 @@ angular.module('pendura.services', [])
       var lname = name.toLowerCase()
       var pendops = operations[pending.toLowerCase()]
       var credits = filter(pendops, function(operation){return operation.from.toLowerCase() === lname})
-      credits = iterate(credits, function(opa){return operation(opa.ts, opa.from, opa.amount, iterate(filter(pendops, function(oma){return (opa.ts === oma.ts) && (oma.from === pending)}), function(oma){return oma.to}).join(", "))})
+      credits = iterate(credits, function(opa){return operation(opa.tid, opa.ts, opa.from, opa.amount, iterate(filter(pendops, function(oma){return (opa.tid === oma.tid) && (oma.from === pending)}), function(oma){return oma.to}).join(", "))})
       var debits = filter(pendops, function(operation){return operation.to.toLowerCase() === lname})
-      debits = iterate(debits, function(opa){return operation(opa.ts, iterate(filter(pendops, function(oma){return (opa.ts === oma.ts) && (oma.to === pending)}), function(oma){return oma.from}).join(", "), opa.amount, opa.to)})
+      debits = iterate(debits, function(opa){return operation(opa.tid, opa.ts, iterate(filter(pendops, function(oma){return (opa.tid === oma.tid) && (oma.to === pending)}), function(oma){return oma.from}).join(", "), opa.amount, opa.to)})
       var filtered = credits.concat(debits)
       filtered.sort(function(opa, oma) {return opa.ts < oma.ts})
       return filtered
     },
     partners: function(pending, name) {
       var lname = name.toLowerCase()
-      return filter(partners[pending.toLowerCase()], function(partner){return partner.toLowerCase() !== lname})
+      return filter(partners[pending.toLowerCase()], function(partner){return partner.nick.toLowerCase() !== lname})
     },
     transaction: function(pending, name, ts, transaction) {
       var lname = name.toLowerCase()
       var pendops = operations[pending.toLowerCase()]
+      var tid = name+'¦'+(++selfie.tick)
       var ops = []
       var sum = 0
       for(property in transaction) {
         if (transaction.hasOwnProperty(property)){
           var amount = 1* (100 * transaction[property]).toFixed(0)
-          ops.push(operation(ts, pending, amount, property))
+          ops.push(operation(tid, ts, pending, amount, property))
           sum += amount
         }
       }
-      ops.push(operation(ts, name, sum, pending))
+      ops.push(operation(tid, ts, name, sum, pending))
       for (var i = 0; i < ops.length; i++) {
         pendops.unshift(ops[i])
       }
