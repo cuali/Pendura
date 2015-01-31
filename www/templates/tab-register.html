@@ -1,15 +1,15 @@
-<ion-view view-title="Novo registro de {{nick}} na {{pending}}">
+<ion-view view-title="Novo registro de {{pending.nick}} na {{pending.name}}">
   <ion-content class='padding-horizontal'>
     <form ng-submit='register()' novalidate='novalidate'>
-    <ion-list class='list-inset'>
-      <ion-item class="row row-bottom item-input item-input-inset" ng-repeat="partner in partners">
-        <h2 class='col col-67 input-label'>{{partner.nick}}</h2>
-        <label class="col item-input-wrapper">
-          <input ng-model='transaction[partner.nick]' type="number" placeholder="Valor" />
-        </label>
-      </ion-item>
-    </ion-list>
-    <button class="button button-block button-positive padding">Registrar</button>
+      <ion-list class='list-inset' id='partners'>
+        <ion-item class="row row-bottom item item-input item-input-inset" ng-repeat="partner in partners">
+          <h2 class='col col-67 input-label'>{{partner.nick}}</h2>
+          <label class="col item-input-wrapper">
+            <input ng-model='transaction[partner.nick]' type="number" placeholder="Valor" />
+          </label>
+        </ion-item>
+      </ion-list>
+      <button class="button button-block button-positive padding">Registrar</button>
     </form>
   </ion-content>
 </ion-view>

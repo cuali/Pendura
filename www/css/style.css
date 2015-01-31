@@ -1,1 +1,3 @@
 /* Empty. Add your own CSS if you like */
+.list-inset .item-input-inset {padding-top:2px;margin-bottom:1px}
+.list-inset .item-input-inset:last-child {padding-bottom:2px}

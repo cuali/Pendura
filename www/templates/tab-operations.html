@@ -1,7 +1,7 @@
-<ion-view view-title="Operações para {{nick}} na {{pending}}">
+<ion-view view-title="Operações para {{pending.nick}} na {{pending.name}}">
   <ion-content>
     <ion-list>
-      <ion-item class="item-remove-animate item-icon-right" ng-repeat="operation in operations" type="item-text-wrap" href="#/tab/ops/{{operation.ts}}">
+      <ion-item class="item-remove-animate item-icon-right" ng-repeat="operation in operations" type="item-text-wrap" href="#/tab/ops/{{operation.tid}}">
         <div class='row row-center'>
           <div class='col col-10 button button-clear button-small button-calm'>{{operation.ts}}</div>
           <div class='col button button-clear button-balanced'>{{operation.from}}</div>

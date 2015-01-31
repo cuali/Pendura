@@ -2,13 +2,24 @@ angular.module('pendura.services', [])
 
 .factory('Operations', function() {
   // Some fake testing data
-  var selfie = {nick:'Alain',tick:1}
-  var partners = {
-    'tupi': [{nick:'Alain',tick:0},{nick:'Marcos',tick:1}],
-    'verde': [{nick:'Alain',tick:1},{nick:'Alano',tick:1},{nick:'Marcos',tick:1},{nick:'Neto',tick:0}]
+  var pendings = {
+    'CAFE-BABE-0123456789' : {
+      name: 'Verde',
+      selfie: {nick:'Alain',tick:3},
+      partners: [{nick:'Alano',tick:1},{nick:'Marcos',tick:1},{nick:'Neto',tick:0}]
+    },
+    'DEAD-BEEF-9876543210' : {
+      name: 'Tupi',
+      selfie: {nick:'Alain',tick:0},
+      partners: [{nick:'Marcos',tick:1}]
+    },
+    'FEED-FACE-5647382910' : {
+      name: 'Facebook',
+      partners: [{nick:'Regina',tick:1},{nick:'Flávia',tick:1},{nick:'Isadora',tick:0}]
+    }
   }
   var operations = {
-    'tupi' : [{
+    'DEAD-BEEF-9876543210' : [{
       ts: '20150128191225.123',
       tid: 'Marcos¦1',
       from: 'Marcos',
@@ -21,7 +32,8 @@ angular.module('pendura.services', [])
       to: 'Alain',
       amount: 5042
     }],
-    'verde' : [{
+    'FEED-FACE-5647382910' : [],
+    'CAFE-BABE-0123456789' : [{
       ts: '20150125131225.123',
       tid: 'Marcos¦1',
       from: 'Verde',
@@ -149,9 +161,9 @@ angular.module('pendura.services', [])
   }
 
   return {
-    balance: function(pending, name) {
-      var lname = name.toLowerCase()
-      var pendops = operations[pending.toLowerCase()]
+    balance: function(pending) {
+      var lname = pending.nick.toLowerCase()
+      var pendops = operations[pending.uuid]
       var creditors = sumup(pendops, function(operation){return operation.from})
       var debitors = sumup(pendops, function(operation){return operation.to})
       var leftovers = merge(creditors, debitors)
@@ -160,35 +172,49 @@ angular.module('pendura.services', [])
       partners.sort(function(pa, ma){return Math.abs(ma.amount)-Math.abs(pa.amount)})
       return { leftover: leftover, participants: partners }
     },
-    mine: function(pending, name) {
-      var lname = name.toLowerCase()
-      var pendops = operations[pending.toLowerCase()]
+    mine: function(pending) {
+      var lname = pending.nick.toLowerCase()
+      var pendops = operations[pending.uuid]
       var credits = filter(pendops, function(operation){return operation.from.toLowerCase() === lname})
-      credits = iterate(credits, function(opa){return operation(opa.tid, opa.ts, opa.from, opa.amount, iterate(filter(pendops, function(oma){return (opa.tid === oma.tid) && (oma.from === pending)}), function(oma){return oma.to}).join(", "))})
+      credits = iterate(credits, function(opa){return operation(opa.tid, opa.ts, opa.from, opa.amount, iterate(filter(pendops, function(oma){return (opa.tid === oma.tid) && (oma.from === pending.name)}), function(oma){return oma.to}).join(", "))})
       var debits = filter(pendops, function(operation){return operation.to.toLowerCase() === lname})
-      debits = iterate(debits, function(opa){return operation(opa.tid, opa.ts, iterate(filter(pendops, function(oma){return (opa.tid === oma.tid) && (oma.to === pending)}), function(oma){return oma.from}).join(", "), opa.amount, opa.to)})
+      debits = iterate(debits, function(opa){return operation(opa.tid, opa.ts, iterate(filter(pendops, function(oma){return (opa.tid === oma.tid) && (oma.to === pending.name)}), function(oma){return oma.from}).join(", "), opa.amount, opa.to)})
       var filtered = credits.concat(debits)
       filtered.sort(function(opa, oma) {return opa.ts < oma.ts})
       return filtered
     },
-    partners: function(pending, name) {
-      var lname = name.toLowerCase()
-      return filter(partners[pending.toLowerCase()], function(partner){return partner.nick.toLowerCase() !== lname})
+    participate: function(pending, nicks) {
     },
-    transaction: function(pending, name, ts, transaction) {
-      var lname = name.toLowerCase()
-      var pendops = operations[pending.toLowerCase()]
-      var tid = name+'¦'+(++selfie.tick)
+    partners: function(pending) {
+      var lname = pending.nick.toLowerCase()
+      return pendings[pending.uuid].partners
+    },
+    pendings: function(pending, name) {
+      var filtered = []
+      for (uuid in pendings) {
+        if (pendings.hasOwnProperty(uuid)) {
+          var join = (undefined !== pendings[uuid].selfie)
+          var nick = (join) ? pendings[uuid].selfie.nick : "Apelido diferente de " + iterate(pendings[uuid].partners, function(partner){return partner.nick}).join(", ")
+          filtered.push({uuid: uuid, name: pendings[uuid].name, join: join, nick: nick})
+        }
+      }
+      return filtered
+    },
+    transaction: function(pending, ts, transaction) {
+      var lname = pending.nick.toLowerCase()
+      var pendops = operations[pending.uuid]
+      var selfie = pendings[pending.uuid].selfie
+      var tid = selfie.nick+'¦'+(++selfie.tick)
       var ops = []
       var sum = 0
       for(property in transaction) {
-        if (transaction.hasOwnProperty(property)){
+        if (transaction.hasOwnProperty(property)) {
           var amount = 1* (100 * transaction[property]).toFixed(0)
-          ops.push(operation(tid, ts, pending, amount, property))
+          ops.push(operation(tid, ts, pending.name, amount, property))
           sum += amount
         }
       }
-      ops.push(operation(tid, ts, name, sum, pending))
+      ops.push(operation(tid, ts, selfie.nick, sum, pending.name))
       for (var i = 0; i < ops.length; i++) {
         pendops.unshift(ops[i])
       }

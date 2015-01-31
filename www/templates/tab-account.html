@@ -2,11 +2,29 @@
   <ion-content>
     <ion-list>
       <ion-item class="item-toggle">
-        Buscar amigos
+        Buscar novos amigos
         <label class="toggle">
           <input type="checkbox" ng-model="settings.checkFriends">
           <div class="track"><div class="handle"></div></div>
         </label>
+      </ion-item>
+      <ion-item class='item-divider'>
+        Penduras
+      </ion-item>
+      <ion-item>
+        <form onsubmit='participate()' novalidate='novalidate'>
+          <ion-list class='list-inset'>
+            <ion-item class="row row-bottom item item-input item-input-inset" ng-repeat="pending in pendings">
+              <h2 class='col col-50 input-label'>{{pending.name}}</h2>
+              <label class="col col-10">
+                <input ng-model='bindings[pending.uuid].join' type='checkbox' ng-checked='{{pending.join}}'/>
+              </label>
+              <label class="col item-input-wrapper">
+                <input ng-model='bindings[pending.uuid].nick' type="text" placeholder='{{pending.nick}}' />
+              </label>
+            </ion-item>
+          </ion-list>
+        </form>
       </ion-item>
     </ion-list>
   </ion-content>
