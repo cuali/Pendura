@@ -1,29 +1,29 @@
 angular.module('pendura.controllers', [])
 
 .controller('SynchCtrl', function($scope, Operations) {
-  if (undefined == $scope.pending) $scope.pending = { uuid: 'CAFE-BABE-0123456789', name: 'Verde', nick: 'Alain' }
+  if (undefined == $scope.active) $scope.active = { uuid: 'CAFE-BABE-0123456789', name: 'Verde', nick: 'Alain' }
   $scope.$on('NewPendingTransaction', function() {
     $scope.$broadcast('NewPendingTransaction')
   })
 })
 .controller('DashCtrl', function($scope, Operations) {
-  $scope.balance = Operations.balance($scope.pending)
+  $scope.balance = Operations.balance($scope.active)
   $scope.$on('NewPendingTransaction', function() {
-    $scope.balance = Operations.balance($scope.pending)
+    $scope.balance = Operations.balance($scope.active)
   })
 })
 .controller('OpsCtrl', function($scope, Operations) {
-  $scope.operations = Operations.mine($scope.pending)
+  $scope.operations = Operations.mine($scope.active)
   $scope.$on('NewPendingTransaction', function() {
-    $scope.operations = Operations.mine($scope.pending)
+    $scope.operations = Operations.mine($scope.active)
   })
 })
 .controller('RegisterCtrl', function($scope, $state, $filter, Operations) {
-  $scope.partners = Operations.partners($scope.pending)
+  $scope.partners = Operations.partners($scope.active)
   $scope.transaction = {}
   $scope.register = function() {
-    var ts = $filter('date')(new Date(), "yyyyMMddHHmmss.sss")
-    Operations.transaction($scope.pending, ts, $scope.transaction)
+    var ts = $filter('date')(new Date(), "yyyy-MM-ddTHH:mm:ss.sss")
+    Operations.transaction($scope.active, ts, $scope.transaction)
     $scope.$emit('NewPendingTransaction')
     $scope.transaction = {}
     $state.go('tab.ops')
@@ -33,7 +33,6 @@ angular.module('pendura.controllers', [])
   $scope.settings = {
     checkFriends: true
   }
-  $scope.bindings = Operations.pendings($scope.pending)
-  $scope.pendings = Operations.pendings($scope.pending)
-  $scope.participate = function(){Operations.participate($scope.pending, $scope.bindings)}
+  $scope.pendings = Operations.pendings($scope.active)
+  $scope.participate = function(){Operations.participate($scope.active, $scope.pendings)}
 })

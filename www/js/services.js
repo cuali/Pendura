@@ -20,13 +20,13 @@ angular.module('pendura.services', [])
   }
   var operations = {
     'DEAD-BEEF-9876543210' : [{
-      ts: '20150128191225.123',
+      ts: '2015-01-28T19:12:25.123',
       tid: 'Marcos¦1',
       from: 'Marcos',
       to: 'Tupi',
       amount: 5042
     }, {
-      ts: '20150128191225.123',
+      ts: '2015-01-28T19:12:25.123',
       tid: 'Marcos¦1',
       from: 'Tupi',
       to: 'Alain',
@@ -34,60 +34,62 @@ angular.module('pendura.services', [])
     }],
     'FEED-FACE-5647382910' : [],
     'CAFE-BABE-0123456789' : [{
-      ts: '20150125131225.123',
+      ts: '2015-01-25T13:12:25.123',
       tid: 'Marcos¦1',
       from: 'Verde',
       to: 'Alain',
       amount: 1042
     }, {
-      ts: '20150125131225.123',
+      ts: '2015-01-25T13:12:25.123',
       tid: 'Marcos¦1',
       from: 'Verde',
       to: 'Neto',
       amount: 500
     }, {
-      ts: '20150125131225.123',
+      ts: '2015-01-25T13:12:25.123',
       tid: 'Marcos¦1',
       from: 'Marcos',
       to: 'Verde',
       amount: 1542
     }, {
-      ts: '20150123131225.234',
+      ts: '2015-01-23T13:12:25.234',
       tid: 'Alano¦1',
       from: 'Verde',
       to: 'Alain',
       amount: 482
     }, {
-      ts: '20150123131225.234',
+      ts: '2015-01-23T13:12:25.234',
       tid: 'Alano¦1',
       from: 'Verde',
       to: 'Marcos',
       amount: 848
     }, {
-      ts: '20150123131225.234',
+      ts: '2015-01-23T13:12:25.234',
       tid: 'Alano¦1',
       from: 'Alano',
       to: 'Verde',
       amount: 1330
     }, {
-      ts: '20150121131225.345',
+      ts: '2015-01-21T13:12:25.345',
       tid: 'Alain¦1',
       from: 'Verde',
       to: 'Neto',
       amount: 1200
     }, {
-      ts: '20150121131225.345',
+      ts: '2015-01-21T13:12:25.345',
       tid: 'Alain¦1',
       from: 'Verde',
       to: 'Alano',
       amount: 300
     }, {
-      ts: '20150121131225.345',
+      ts: '2015-01-21T13:12:25.345',
       tid: 'Alain¦1',
       from: 'Alain',
       to: 'Verde',
       amount: 1500
 }]}
+
+// merge transactions older than 60 days into one summary transaction
 
   var filter = function(elements, checker) {
       var filtered = []
@@ -100,10 +102,10 @@ angular.module('pendura.services', [])
       return filtered
   }
 
-  var iterate = function(elements, transform) {
+  var transform = function(elements, transformer) {
     var transformed = []
     for (var i = 0; i< elements.length; i++) {
-      var mapped = transform(elements[i])
+      var mapped = transformer(elements[i])
       transformed.push(mapped)
     }
     return transformed
@@ -113,29 +115,29 @@ angular.module('pendura.services', [])
     pendops.sort(function(opa, oma){return extractor(opa) < extractor(oma)})
     var partners = []
     var value = 0
-    var name = ''
+    var nick = ''
     for (var i = 0; i < pendops.length; i++) {
       var operation = pendops[i]
-      if (extractor(operation) === name) {
+      if (extractor(operation) === nick) {
         value += operation.amount
       } else {
-        partners.push({name: name, amount: value})
-        name = extractor(operation)
+        partners.push({nick: nick, amount: value})
+        nick = extractor(operation)
         value = operation.amount
       }
     }
-    partners.push({name: name, amount: value})
-    partners.shift() // remove the first entry whose name === ''
+    partners.push({nick: nick, amount: value})
+    partners.shift() // remove the first entry whose nick === ''
     return partners
   }
 
   var merge = function(creditors, debitors) {
     var keys = []
     for (var i = 0; i < creditors.length; i++) {
-      keys.push(creditors[i].name)
+      keys.push(creditors[i].nick)
     }
     for (var i = 0; i < debitors.length; i++) {
-      keys.push(debitors[i].name)
+      keys.push(debitors[i].nick)
     }
     keys.sort()
     for (var i = keys.length -1; i > 0; ) {
@@ -149,9 +151,9 @@ angular.module('pendura.services', [])
     var merged = []
     for (var i = 0; i < keys.length; i++) {
       var key = keys[i]
-      var credit = filter(creditors, function(element){return element.name === key})
-      var debit = filter(debitors, function(element){return element.name === key})
-      merged.push({name: key, amount: amount(credit)-amount(debit)})
+      var credit = filter(creditors, function(element){return element.nick === key})
+      var debit = filter(debitors, function(element){return element.nick === key})
+      merged.push({nick: key, amount: amount(credit)-amount(debit)})
     }
     return merged
   }
@@ -167,7 +169,7 @@ angular.module('pendura.services', [])
       var creditors = sumup(pendops, function(operation){return operation.from})
       var debitors = sumup(pendops, function(operation){return operation.to})
       var leftovers = merge(creditors, debitors)
-      var leftover = filter(leftovers, function(partner){return partner.name.toLowerCase() === lname})[0].amount
+      var leftover = filter(leftovers, function(partner){return partner.nick.toLowerCase() === lname})[0].amount
       var partners = (leftover < 0) ? filter(leftovers, function(partner){return partner.amount > 0}) : filter(leftovers, function(partner){return partner.amount < 0})
       partners.sort(function(pa, ma){return Math.abs(ma.amount)-Math.abs(pa.amount)})
       return { leftover: leftover, participants: partners }
@@ -176,9 +178,9 @@ angular.module('pendura.services', [])
       var lname = pending.nick.toLowerCase()
       var pendops = operations[pending.uuid]
       var credits = filter(pendops, function(operation){return operation.from.toLowerCase() === lname})
-      credits = iterate(credits, function(opa){return operation(opa.tid, opa.ts, opa.from, opa.amount, iterate(filter(pendops, function(oma){return (opa.tid === oma.tid) && (oma.from === pending.name)}), function(oma){return oma.to}).join(", "))})
+      credits = transform(credits, function(opa){return operation(opa.tid, opa.ts, opa.from, opa.amount, transform(filter(pendops, function(oma){return (opa.tid === oma.tid) && (oma.from === pending.name)}), function(oma){return oma.to}).join(", "))})
       var debits = filter(pendops, function(operation){return operation.to.toLowerCase() === lname})
-      debits = iterate(debits, function(opa){return operation(opa.tid, opa.ts, iterate(filter(pendops, function(oma){return (opa.tid === oma.tid) && (oma.to === pending.name)}), function(oma){return oma.from}).join(", "), opa.amount, opa.to)})
+      debits = transform(debits, function(opa){return operation(opa.tid, opa.ts, transform(filter(pendops, function(oma){return (opa.tid === oma.tid) && (oma.to === pending.name)}), function(oma){return oma.from}).join(", "), opa.amount, opa.to)})
       var filtered = credits.concat(debits)
       filtered.sort(function(opa, oma) {return opa.ts < oma.ts})
       return filtered
@@ -186,16 +188,23 @@ angular.module('pendura.services', [])
     participate: function(pending, nicks) {
     },
     partners: function(pending) {
-      var lname = pending.nick.toLowerCase()
       return pendings[pending.uuid].partners
     },
-    pendings: function(pending, name) {
+    pendings: function(pending) {
       var filtered = []
       for (uuid in pendings) {
         if (pendings.hasOwnProperty(uuid)) {
-          var join = (undefined !== pendings[uuid].selfie)
-          var nick = (join) ? pendings[uuid].selfie.nick : "Apelido diferente de " + iterate(pendings[uuid].partners, function(partner){return partner.nick}).join(", ")
-          filtered.push({uuid: uuid, name: pendings[uuid].name, join: join, nick: nick})
+          var joined = (undefined !== pendings[uuid].selfie)
+          var nick = ''
+          var tip = ''
+          if (joined) {
+            nick = pendings[uuid].selfie.nick
+          } else {
+            var names = transform(pendings[uuid].partners, function(partner){return partner.nick})
+            names.push(pendings[uuid].name)
+            tip = "Apelido diferente de " + names.join(", ")
+          }
+          filtered.push({uuid: uuid, name: pendings[uuid].name, join: joined, nick: nick, tip: tip})
         }
       }
       return filtered
