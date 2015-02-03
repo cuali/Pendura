@@ -6,88 +6,87 @@ angular.module('pendura.services', [])
     'CAFE-BABE-0123456789' : {
       name: 'Verde',
       selfie: {nick:'Alain',tick:3},
-      partners: [{nick:'Alano',tick:1},{nick:'Marcos',tick:1},{nick:'Neto',tick:0}]
+      partners: [{nick:'Alano',tick:1},{nick:'Marcos',tick:1},{nick:'Neto',tick:0}],
+      operations: [{
+          ts: '2015-01-25T13:12:25.123',
+          tid: 'Marcos¦1',
+          from: 'Verde',
+          to: 'Alain',
+          amount: 1042
+        }, {
+          ts: '2015-01-25T13:12:25.123',
+          tid: 'Marcos¦1',
+          from: 'Verde',
+          to: 'Neto',
+          amount: 500
+        }, {
+          ts: '2015-01-25T13:12:25.123',
+          tid: 'Marcos¦1',
+          from: 'Marcos',
+          to: 'Verde',
+          amount: 1542
+        }, {
+          ts: '2015-01-23T13:12:25.234',
+          tid: 'Alano¦1',
+          from: 'Verde',
+          to: 'Alain',
+          amount: 482
+        }, {
+          ts: '2015-01-23T13:12:25.234',
+          tid: 'Alano¦1',
+          from: 'Verde',
+          to: 'Marcos',
+          amount: 848
+        }, {
+          ts: '2015-01-23T13:12:25.234',
+          tid: 'Alano¦1',
+          from: 'Alano',
+          to: 'Verde',
+          amount: 1330
+        }, {
+          ts: '2015-01-21T13:12:25.345',
+          tid: 'Alain¦1',
+          from: 'Verde',
+          to: 'Neto',
+          amount: 1200
+        }, {
+          ts: '2015-01-21T13:12:25.345',
+          tid: 'Alain¦1',
+          from: 'Verde',
+          to: 'Alano',
+          amount: 300
+        }, {
+          ts: '2015-01-21T13:12:25.345',
+          tid: 'Alain¦1',
+          from: 'Alain',
+          to: 'Verde',
+          amount: 1500
+        }]
     },
     'DEAD-BEEF-9876543210' : {
       name: 'Tupi',
       selfie: {nick:'Alain',tick:0},
-      partners: [{nick:'Marcos',tick:1}]
+      partners: [{nick:'Marcos',tick:1}],
+      operations: [{
+          ts: '2015-01-28T19:12:25.123',
+          tid: 'Marcos¦1',
+          from: 'Marcos',
+          to: 'Tupi',
+          amount: 5042
+        }, {
+          ts: '2015-01-28T19:12:25.123',
+          tid: 'Marcos¦1',
+          from: 'Tupi',
+          to: 'Alain',
+          amount: 5042
+        }]
     },
     'FEED-FACE-5647382910' : {
       name: 'Facebook',
-      partners: [{nick:'Regina',tick:1},{nick:'Flávia',tick:1},{nick:'Isadora',tick:0}]
+      partners: [{nick:'Regina',tick:1},{nick:'Flávia',tick:1},{nick:'Isadora',tick:0}],
+      operations: []
     }
   }
-  var operations = {
-    'DEAD-BEEF-9876543210' : [{
-      ts: '2015-01-28T19:12:25.123',
-      tid: 'Marcos¦1',
-      from: 'Marcos',
-      to: 'Tupi',
-      amount: 5042
-    }, {
-      ts: '2015-01-28T19:12:25.123',
-      tid: 'Marcos¦1',
-      from: 'Tupi',
-      to: 'Alain',
-      amount: 5042
-    }],
-    'FEED-FACE-5647382910' : [],
-    'CAFE-BABE-0123456789' : [{
-      ts: '2015-01-25T13:12:25.123',
-      tid: 'Marcos¦1',
-      from: 'Verde',
-      to: 'Alain',
-      amount: 1042
-    }, {
-      ts: '2015-01-25T13:12:25.123',
-      tid: 'Marcos¦1',
-      from: 'Verde',
-      to: 'Neto',
-      amount: 500
-    }, {
-      ts: '2015-01-25T13:12:25.123',
-      tid: 'Marcos¦1',
-      from: 'Marcos',
-      to: 'Verde',
-      amount: 1542
-    }, {
-      ts: '2015-01-23T13:12:25.234',
-      tid: 'Alano¦1',
-      from: 'Verde',
-      to: 'Alain',
-      amount: 482
-    }, {
-      ts: '2015-01-23T13:12:25.234',
-      tid: 'Alano¦1',
-      from: 'Verde',
-      to: 'Marcos',
-      amount: 848
-    }, {
-      ts: '2015-01-23T13:12:25.234',
-      tid: 'Alano¦1',
-      from: 'Alano',
-      to: 'Verde',
-      amount: 1330
-    }, {
-      ts: '2015-01-21T13:12:25.345',
-      tid: 'Alain¦1',
-      from: 'Verde',
-      to: 'Neto',
-      amount: 1200
-    }, {
-      ts: '2015-01-21T13:12:25.345',
-      tid: 'Alain¦1',
-      from: 'Verde',
-      to: 'Alano',
-      amount: 300
-    }, {
-      ts: '2015-01-21T13:12:25.345',
-      tid: 'Alain¦1',
-      from: 'Alain',
-      to: 'Verde',
-      amount: 1500
-}]}
 
 // merge transactions older than 60 days into one summary transaction
 
@@ -159,24 +158,25 @@ angular.module('pendura.services', [])
   }
 
   var operation = function(tid, ts, creditor, amount, debitor) {
-    return (amount>0) ? {ts: ts, tid: tid, from: creditor, amount: amount, to: debitor} : {ts: ts, tid: tid, from: debitor, amount: amount, to: creditor}
+    return (amount>0) ? {ts: ts, tid: tid, from: creditor, amount: amount, to: debitor} : {ts: ts, tid: tid, from: debitor, amount: -amount, to: creditor}
   }
 
   return {
     balance: function(pending) {
       var lname = pending.nick.toLowerCase()
-      var pendops = operations[pending.uuid]
+      var pendops = pendings[pending.uuid].operations
       var creditors = sumup(pendops, function(operation){return operation.from})
       var debitors = sumup(pendops, function(operation){return operation.to})
       var leftovers = merge(creditors, debitors)
-      var leftover = filter(leftovers, function(partner){return partner.nick.toLowerCase() === lname})[0].amount
-      var partners = (leftover < 0) ? filter(leftovers, function(partner){return partner.amount > 0}) : filter(leftovers, function(partner){return partner.amount < 0})
+      var leftops = filter(leftovers, function(partner){return partner.nick.toLowerCase() === lname})
+      var leftover = (leftops.length) ? leftops[0].amount : 0
+      var partners = (leftover === 0) ? [] : (leftover < 0) ? filter(leftovers, function(partner){return partner.amount > 0}) : filter(leftovers, function(partner){return partner.amount < 0})
       partners.sort(function(pa, ma){return Math.abs(ma.amount)-Math.abs(pa.amount)})
       return { leftover: leftover, participants: partners }
     },
     mine: function(pending) {
       var lname = pending.nick.toLowerCase()
-      var pendops = operations[pending.uuid]
+      var pendops = pendings[pending.uuid].operations
       var credits = filter(pendops, function(operation){return operation.from.toLowerCase() === lname})
       credits = transform(credits, function(opa){return operation(opa.tid, opa.ts, opa.from, opa.amount, transform(filter(pendops, function(oma){return (opa.tid === oma.tid) && (oma.from === pending.name)}), function(oma){return oma.to}).join(", "))})
       var debits = filter(pendops, function(operation){return operation.to.toLowerCase() === lname})
@@ -185,17 +185,29 @@ angular.module('pendura.services', [])
       filtered.sort(function(opa, oma) {return opa.ts < oma.ts})
       return filtered
     },
-    activate: function(active, nicks) {
-      var pending = pendings[active.uuid]
-      active.name = pending.name
+    activate: function(active, uuid, nicks) {
+      var pending = pendings[uuid]
       if (undefined === pending.selfie) {
-        active.nick = filter(nicks, function(nick){return nick.uuid === active.uuid})[0].nick
-        pending.selfie = {nick: active.nick, tick: 0}
-      } else {
-        active.nick = pending.selfie.nick
+        var nick = filter(nicks, function(nick){return nick.uuid === uuid})[0].nick
+        var lname = nick.toLowerCase()
+        var existing = filter(pending.partners, function(partner){return partner.nick.toLowerCase() === lname})
+        if (!nick || existing.length || lname === pending.name.toLowerCase()) {
+          return false// invalid nick
+        }
+        pending.selfie = {nick: nick, tick: 0}
       }
+      active.nick = pending.selfie.nick
+      active.uuid = uuid
+      active.name = pending.name
+      return true
     },
-    create: function(pending, nicks) {
+    create: function(pending) {
+      var existing = pendings[pending.uuid]
+      if (existing || "" == pending.name || "" == pending.nick || pending.name.toLowerCase() == pending.nick.toLowerCase()) {
+        return false
+      }
+      pendings[pending.uuid] = {name: pending.name, selfie: {nick: pending.nick, tick: 0}, partners: [], operations: []}
+      return true
     },
     partners: function(pending) {
       return pendings[pending.uuid].partners
@@ -221,7 +233,7 @@ angular.module('pendura.services', [])
     },
     transaction: function(pending, ts, transaction) {
       var lname = pending.nick.toLowerCase()
-      var pendops = operations[pending.uuid]
+      var pendops = pendings[pending.uuid].operations
       var selfie = pendings[pending.uuid].selfie
       var tid = selfie.nick+'¦'+(++selfie.tick)
       var ops = []

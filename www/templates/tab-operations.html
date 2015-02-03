@@ -1,5 +1,5 @@
 <ion-view view-title="Operações para {{active.nick}} na {{active.name}}">
-  <ion-content>
+  <ion-content class="padding">
     <ion-list>
       <ion-item class="item-remove-animate item-icon-right" ng-repeat="operation in operations" type="item-text-wrap" href="#/tab/ops/{{operation.tid}}">
         <div class='row row-center'>
@@ -10,6 +10,7 @@
           <div class='col col-10'><i class="icon ion-heart-broken icon-accessory padding-right"></i></div>
         </div>
       </ion-item>
+      <ion-item ng-if='operations.length == 0'>Não foram encontradas operações para {{active.nick}} na {{active.name}}</ion-item>
     </ion-list>
   </ion-content>
 </ion-view>

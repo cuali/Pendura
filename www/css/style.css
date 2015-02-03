@@ -3,3 +3,4 @@
 .item-input-inset .item-input-wrapper{margin-top:-8px}
 .item-input-inset .item-input-wrapper input{position:relative;left:0px;height:28px}
 .item-radio .radio-icon{padding:10px}
+h2.col-50.item-input-wrapper{margin-right:2%;max-width:48%}
