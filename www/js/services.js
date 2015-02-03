@@ -185,7 +185,17 @@ angular.module('pendura.services', [])
       filtered.sort(function(opa, oma) {return opa.ts < oma.ts})
       return filtered
     },
-    participate: function(pending, nicks) {
+    activate: function(active, nicks) {
+      var pending = pendings[active.uuid]
+      active.name = pending.name
+      if (undefined === pending.selfie) {
+        active.nick = filter(nicks, function(nick){return nick.uuid === active.uuid})[0].nick
+        pending.selfie = {nick: active.nick, tick: 0}
+      } else {
+        active.nick = pending.selfie.nick
+      }
+    },
+    create: function(pending, nicks) {
     },
     partners: function(pending) {
       return pendings[pending.uuid].partners

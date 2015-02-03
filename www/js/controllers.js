@@ -1,7 +1,9 @@
 angular.module('pendura.controllers', [])
 
 .controller('SynchCtrl', function($scope, Operations) {
-  if (undefined == $scope.active) $scope.active = { uuid: 'CAFE-BABE-0123456789', name: 'Verde', nick: 'Alain' }
+  if (undefined === $scope.active) {
+    $scope.active = { uuid: 'CAFE-BABE-0123456789', name: 'Verde', nick: 'Alain' }
+  }
   $scope.$on('NewPendingTransaction', function() {
     $scope.$broadcast('NewPendingTransaction')
   })
@@ -29,10 +31,16 @@ angular.module('pendura.controllers', [])
     $state.go('tab.ops')
   }
 })
-.controller('AccountCtrl', function($scope, Operations) {
+.controller('AccountCtrl', function($scope, $state, Operations) {
   $scope.settings = {
     checkFriends: true
   }
   $scope.pendings = Operations.pendings($scope.active)
-  $scope.participate = function(){Operations.participate($scope.active, $scope.pendings)}
+  $scope.activate = function(){
+    Operations.activate($scope.active, $scope.pendings)
+    $scope.$apply()
+    $scope.$emit('NewPendingTransaction')
+    $state.go('tab.dash')
+  }
+  $scope.create = function(){Operations.create($scope.active, $scope.pendings)}
 })

@@ -12,21 +12,19 @@
         Penduras
       </ion-item>
       <ion-item>
-        <form onsubmit='participate()' novalidate='novalidate'>
+        <form onsubmit='create()' novalidate='novalidate'>
           <ion-list class='list-inset'>
-            <ion-item class="row row-bottom item item-input item-input-inset item-radio" ng-repeat="pending in pendings">
+            <ion-item class="row row-middle item item-input item-input-inset item-radio" ng-repeat="pending in pendings">
               <h2 class='col col-50 input-label'>{{pending.name}}</h2>
               <label class="col col-10 toggle toggle-balanced">
                 <input ng-model='pending.join' type='checkbox' ng-checked='pending.join'/>
                 <div class="track"><div class="handle"></div></div>
               </label>
-              <div class="col">
-                <label class="item-input-wrapper">
+              <div class="col item-input-wrapper">
                   <input ng-model='pending.nick' type="text" ng-readonly='pending.join' placeholder='{{pending.tip}}' />
-                </label>
               </div>
               <label class="col col-10">
-                <input ng-model='active.uuid' ng-value='pending.uuid' type="radio" ng-readonly='pending.join' name="active" ng-checked='(active.uuid == pending.uuid)' />
+                <input ng-model='active.uuid' ng-value='pending.uuid' type="radio" ng-readonly='pending.join' name="active" ng-checked='(active.uuid === pending.uuid)' ng-change='activate()' />
                 <i class="radio-icon ion-checkmark"></i>
               </label>
             </ion-item>

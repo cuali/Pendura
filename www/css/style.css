@@ -1,3 +1,5 @@
-/* Empty. Add your own CSS if you like */
-.list-inset .item-input-inset {padding-top:8px;margin-bottom:1px}
-.list-inset .item-input-inset:last-child {padding-bottom:1px}
+.list-inset .item-input-inset{padding-top:8px;margin-bottom:1px}
+.list-inset .item-input-inset:last-child{padding-bottom:1px}
+.item-input-inset .item-input-wrapper{margin-top:-8px}
+.item-input-inset .item-input-wrapper input{position:relative;left:0px;height:28px}
+.item-radio .radio-icon{padding:10px}
