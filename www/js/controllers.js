@@ -1,9 +1,14 @@
 angular.module('pendura.controllers', [])
 
-.controller('SynchCtrl', function($scope, Operations) {
+.controller('SynchCtrl', function($scope, $cordovaFile, Operations) {
   if (undefined === $scope.active) {
     $scope.active = { uuid: 'CAFE-BABE-0123456789', name: 'Verde', nick: 'Alain' }
   }
+  /*
+  $ionicPlatform.ready(function() {
+    $scope.active = Operations.load($cordovaFile) // http://ngcordova.com/docs/plugins/file/
+  })
+  */
   $scope.$on('RefreshAllScopes', function() {
     $scope.$broadcast('RefreshAllScopes')
   })

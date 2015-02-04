@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'pendura.services' is found in services.js
 // 'pendura.controllers' is found in controllers.js
-angular.module('pendura', ['ionic', 'uuid4', 'pendura.controllers', 'pendura.services'])
+angular.module('pendura', ['ionic', 'ngCordova', 'uuid4', 'pendura.controllers', 'pendura.services'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
