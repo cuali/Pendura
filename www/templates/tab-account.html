@@ -2,32 +2,26 @@
   <ion-content class="padding">
     <ion-list class='list-inset'>
       <ion-item class="row row-middle item item-input item-input-inset item-radio" ng-repeat="pending in pendings">
-        <h2 class='col col-50 input-label'>{{pending.name}}</h2>
-        <label class="col col-10 toggle toggle-balanced">
-          <input ng-model='pending.join' type='checkbox' />
-          <div class="track"><div class="handle"></div></div>
-        </label>
+        <h2 class='col col-50 input-label' ng-click='activate(pending.uuid)'>{{pending.name}}</h2>
         <div class="col item-input-wrapper">
             <input ng-model='pending.nick' type="text" ng-readonly='pending.join' placeholder='{{pending.tip}}' />
         </div>
         <label class="col col-10">
           <input ng-model='uuid' ng-value='pending.uuid' type="radio" name="active" ng-checked='(active.uuid === pending.uuid)' ng-change='activate(pending.uuid)'
-              ng-disabled='!(pending.join) || "" == pending.nick' />
+              ng-disabled='"" == pending.nick' />
           <i class="radio-icon ion-checkmark"></i>
         </label>
       </ion-item>
       <ion-item class="row row-middle item item-input item-input-inset item-radio">
-          <h2 class='col col-50 item-input-wrapper'><input type='text' ng-model='future.name' placeholder='Nova pendura' /></h2>
-          <label class="col col-10 toggle toggle-balanced">
-            <input ng-model='future.join' type='checkbox' />
-            <div class="track"><div class="handle"></div></div>
-          </label>
+          <div class='col col-50 item-input-wrapper'>
+            <input ng-model='future.name' type='text' placeholder='Nova pendura' />
+          </div>
           <div class="col item-input-wrapper">
-              <input ng-model='future.nick' type="text" ng-readonly='future.join' placeholder='Novo apelido' />
+            <input ng-model='future.nick' type="text" ng-readonly='future.join' placeholder='Novo apelido' />
           </div>
           <label class="col col-10">
             <input ng-model='uuid' type="radio" name="active" ng-checked='(active.uuid === "")' ng-change='create(future)'
-                ng-disabled='!(future.join) || "" == future.name || "" == future.nick || future.name.toLowerCase() == future.nick.toLowerCase()' />
+                ng-disabled='"" == future.name || "" == future.nick || future.name.toLowerCase() == future.nick.toLowerCase()' />
             <i class="radio-icon ion-checkmark"></i>
           </label>
       </ion-item>

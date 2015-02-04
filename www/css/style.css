@@ -1,6 +1,19 @@
+.toggle .track{position:relative}
+.toggle .handle{top:0;left:0}
+.col-10.toggle{text-align:center}
+.col-left{text-align:left}
+.col-right{text-align:right}
+.col-center{text-align:center}
+.row-top:first-child{padding-bottom:0;margin-bottom:-20px}
+.item-complex .item-content{padding-right:16px}
+.list-inset .item.item-input input[type='number'],
+  .list-inset .item.item-input input[type='text']{padding-right:4px}
 .list-inset .item-input-inset{padding-top:8px;margin-bottom:1px}
-.list-inset .item-input-inset:last-child{padding-bottom:1px}
-.item-input-inset .item-input-wrapper{margin-top:-8px}
-.item-input-inset .item-input-wrapper input{position:relative;left:0px;height:28px}
-.item-radio .radio-icon{padding:10px}
-h2.col-50.item-input-wrapper{margin-right:2%;max-width:48%}
+.list-inset .item-input-inset:last-child{padding-bottom:2px}
+.item-input-inset .item-input-wrapper{margin-top:-6px}
+.item-input-inset .item-input-wrapper input{position:relative;left:0;height:28px}
+.item-radio .radio-icon{padding:8px}
+.col-50.item-input-wrapper{margin-right:2%;max-width:48%}
+.padding-none{padding:0}
+.item h2{margin-bottom:0}
+.tab-item .icon{margin:1px auto 0;height:30px}

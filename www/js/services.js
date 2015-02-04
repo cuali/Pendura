@@ -224,7 +224,7 @@ angular.module('pendura.services', [])
           } else {
             var names = transform(pendings[uuid].partners, function(partner){return partner.nick})
             names.push(pendings[uuid].name)
-            tip = "Apelido diferente de " + names.join(", ")
+            tip = "≠ " + names.join(", ")
           }
           filtered.push({uuid: uuid, name: pendings[uuid].name, join: joined, nick: nick, tip: tip})
         }

@@ -1,13 +1,15 @@
 <ion-view view-title="Operações para {{active.nick}} na {{active.name}}">
-  <ion-content class="padding">
+  <ion-content class="padding-vertical">
     <ion-list>
-      <ion-item class="item-remove-animate item-icon-right" ng-repeat="operation in operations" type="item-text-wrap" href="#/tab/ops/{{operation.tid}}">
+      <ion-item class="item-remove-animate" ng-repeat="operation in operations" type="item-text-wrap" href="#/tab/ops/{{operation.tid}}">
+        <div class='row row-top item-icon-right'>
+          <div class='col col-90 col-left button button-clear button-small button-calm'>{{operation.ts | date:'medium'}}</div>
+          <div class='col col-10 col-right button button-clear button-small'><i class="icon ion-heart-broken icon-accessory"></i></div>
+        </div>
         <div class='row row-center'>
-          <div class='col col-10 button button-clear button-small button-calm'>{{operation.ts | date:'medium'}}</div>
-          <div class='col button button-clear button-balanced'>{{operation.from}}</div>
-          <div class='col col-20 button button-large button-clear button-dark'>{{operation.amount / 100 | currency}}</div>
-          <div class='col button button-clear button-energized'>{{operation.to}}</div>
-          <div class='col col-10'><i class="icon ion-heart-broken icon-accessory padding-right"></i></div>
+          <div class='col col-33 col-left button button-clear button-balanced'>{{operation.from}}</div>
+          <div class='col col-25 col-center button button-large button-clear button-dark'>{{operation.amount / 100 | currency}}</div>
+          <div class='col col-right button button-clear button-energized'>{{operation.to}}</div>
         </div>
       </ion-item>
       <ion-item ng-if='operations.length == 0'>Não foram encontradas operações para {{active.nick}} na {{active.name}}</ion-item>

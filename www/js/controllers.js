@@ -46,21 +46,13 @@ angular.module('pendura.controllers', [])
     $scope.uuid = $scope.active.uuid
     $scope.pendings = Operations.pendings($scope.active)
   }
-  $scope.future = {
-    name: '',
-    nick: '',
-    join: false
-  }
+  $scope.future = { name: '', nick: '', join: false }
   $scope.create = function(pending){
     var uuid = uuid4.generate()
     pending.uuid = uuid
     if (Operations.create(pending)) {
       $scope.activate(uuid)
-      $scope.future = {
-        name: '',
-        nick: '',
-        join: false
-      }
+      $scope.future = { name: '', nick: '', join: false }
     } else {
       $scope.uuid = $scope.active.uuid
       $scope.pendings = Operations.pendings($scope.active)
