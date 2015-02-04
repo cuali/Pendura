@@ -88,7 +88,7 @@ angular.module('pendura.services', [])
     }
   }
 
-// merge transactions older than 60 days into one summary transaction
+// don't forget to merge transactions older than 60 days into one summary transaction
 
   var filter = function(elements, checker) {
       var filtered = []

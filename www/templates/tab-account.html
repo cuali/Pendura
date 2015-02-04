@@ -20,9 +20,8 @@
             <input ng-model='future.nick' type="text" ng-readonly='future.join' placeholder='Novo apelido' />
           </div>
           <label class="col col-10">
-            <input ng-model='uuid' type="radio" name="active" ng-checked='(active.uuid === "")' ng-change='create(future)'
-                ng-disabled='"" == future.name || "" == future.nick || future.name.toLowerCase() == future.nick.toLowerCase()' />
-            <i class="radio-icon ion-checkmark"></i>
+            <button class="button button-clear button-dark icon ion-plus-circled" ng-click='create(future)'
+                ng-disabled='"" == future.name || "" == future.nick || future.name.toLowerCase() == future.nick.toLowerCase()'></button>
           </label>
       </ion-item>
     </ion-list>

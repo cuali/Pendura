@@ -10,6 +10,8 @@
   .list-inset .item.item-input input[type='text']{padding-right:4px}
 .list-inset .item-input-inset{padding-top:8px;margin-bottom:1px}
 .list-inset .item-input-inset:last-child{padding-bottom:2px}
+.list-inset .item-input-inset:last-child button{margin:-8px 0;padding:0 4px;max-height:34px;min-height:34px}
+.list-inset .item-input-inset:last-child button.icon:before{line-height:29px}
 .item-input-inset .item-input-wrapper{margin-top:-6px}
 .item-input-inset .item-input-wrapper input{position:relative;left:0;height:28px}
 .item-radio .radio-icon{padding:8px}
