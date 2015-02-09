@@ -1,14 +1,18 @@
 angular.module('pendura.controllers', [])
 
-.controller('SynchCtrl', function($scope, $cordovaFile, Operations) {
+.controller('SynchCtrl', function($q, $scope, $ionicPlatform, $cordovaFile, Operations) {
   if (undefined === $scope.active) {
     $scope.active = { uuid: 'CAFE-BABE-0123456789', name: 'Verde', nick: 'Alain' }
   }
-  /*
+  //*
   $ionicPlatform.ready(function() {
-    $scope.active = Operations.load($cordovaFile) // http://ngcordova.com/docs/plugins/file/
+    Operations.load($q, $cordovaFile).then(function(result) {
+      $scope.active = result
+    }, function(error) {
+      // FIXME what should I do with that error???
+    })
   })
-  */
+  // */
   $scope.$on('RefreshAllScopes', function() {
     $scope.$broadcast('RefreshAllScopes')
   })

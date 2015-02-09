@@ -250,6 +250,37 @@ angular.module('pendura.services', [])
         pendops.unshift(ops[i])
       }
       return pendops.length
+    },
+    load: function($q, $cordovaFile) {
+      var q = $q.defer()
+      var directory = (cordova) ? cordova.file.dataDirectory : "" // http://ngcordova.com/docs/plugins/file/
+      $cordovaFile.checkDir(directory, '').then(function(result) {
+        $cordovaFile.checkFile(directory, 'pendings.json').then(function(result) {
+            // Success!
+              q.resolve(result)
+        }, function(err) {
+          $cordovaFile.createFile(directory, '/pendings.json', true).then(function(result) {
+            var blob = new Blob(['{',"'active':{},","'pendings':{}",'}'] , {type: 'text/plain'})
+            $cordovaFile.writeFile(directory, 'pendings.json', blob, true).then(function(result) {
+              q.resolve(result)
+            }, function(err) {
+              q.reject({uuid:'FACE-CAFE-FEED-BABE-DEAD-BEEF',nick:'Missing file',name:directory+'/pendings.json'})
+            })
+          }, function(err) {
+            q.reject({uuid:'FACE-CAFE-FEED-BABE-DEAD-BEEF',nick:'Missing file',name:directory+'/pendings.json'})
+          })
+        })
+      }, function(error) {
+          console.log(error)
+        $cordovaFile.createDir(directory, '', false).then(function(result) {
+            // Success! ===> checkFile
+              q.resolve(result)
+        }, function(err) {
+          console.log(err)
+          q.reject({uuid:'FACE-CAFE-FEED-BABE-DEAD-BEEF',nick:'Missing directory',name:directory})
+        })
+      })
+      return q.promise
     }
   }
 })
