@@ -14,6 +14,7 @@
 .list-inset .item-input-inset:last-child button.icon:before{line-height:29px}
 .item-input-inset .item-input-wrapper{margin-top:-6px}
 .item-input-inset .item-input-wrapper input{position:relative;left:0;height:28px}
+.item-input-wrapper input[ng-readonly]::input-placeholder{font-size:80%}
 .item-radio .radio-icon{padding:8px}
 .col-50.item-input-wrapper{margin-right:2%;max-width:48%}
 .padding-none{padding:0}

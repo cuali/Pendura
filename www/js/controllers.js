@@ -4,7 +4,7 @@ angular.module('pendura.controllers', [])
   if (undefined === $scope.active) {
     $scope.active = { uuid: 'CAFE-BABE-0123456789', name: 'Verde', nick: 'Alain' }
   }
-  //*
+  /*
   $ionicPlatform.ready(function() {
     Operations.load($q, $cordovaFile).then(function(result) {
       $scope.active = result

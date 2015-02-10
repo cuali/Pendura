@@ -1,6 +1,23 @@
 angular.module('pendura.services', [])
-
-.factory('Operations', function() {
+.factory('$localstorage', ['$window', function($window) {
+  return {
+    set: function(key, value) {
+      if (typeof value == 'string' || value instanceof String) {
+        $window.localStorage[key] = value
+      } else {
+        $window.localStorage[key] = JSON.stringify(value)
+      }
+    },
+    get: function(key, defaultValue) {
+      if (arguments.length > 1 && (typeof defaultValue == 'string' || defaultValue instanceof String)) {
+        return $window.localStorage[key] || defaultValue
+      } else {
+        return JSON.parse($window.localStorage[key] || '{}')
+      }
+    }
+  }
+}])
+.factory('Operations', ['$filter', function($filter) {
   // Some fake testing data
   var pendings = {
     'CAFE-BABE-0123456789' : {
@@ -90,17 +107,6 @@ angular.module('pendura.services', [])
 
 // don't forget to merge transactions older than 60 days into one summary transaction
 
-  var filter = function(elements, checker) {
-      var filtered = []
-      for (var i = 0; i < elements.length; i++) {
-        var element = elements[i]
-        if (checker(element)) {
-          filtered.push(element)
-        }
-      }
-      return filtered
-  }
-
   var transform = function(elements, transformer) {
     var transformed = []
     for (var i = 0; i< elements.length; i++) {
@@ -150,8 +156,8 @@ angular.module('pendura.services', [])
     var merged = []
     for (var i = 0; i < keys.length; i++) {
       var key = keys[i]
-      var credit = filter(creditors, function(element){return element.nick === key})
-      var debit = filter(debitors, function(element){return element.nick === key})
+      var credit = $filter('filter')(creditors, function(element){return element.nick === key})
+      var debit = $filter('filter')(debitors, function(element){return element.nick === key})
       merged.push({nick: key, amount: amount(credit)-amount(debit)})
     }
     return merged
@@ -168,19 +174,19 @@ angular.module('pendura.services', [])
       var creditors = sumup(pendops, function(operation){return operation.from})
       var debitors = sumup(pendops, function(operation){return operation.to})
       var leftovers = merge(creditors, debitors)
-      var leftops = filter(leftovers, function(partner){return partner.nick.toLowerCase() === lname})
+      var leftops = $filter('filter')(leftovers, function(partner){return partner.nick.toLowerCase() === lname})
       var leftover = (leftops.length) ? leftops[0].amount : 0
-      var partners = (leftover === 0) ? [] : (leftover < 0) ? filter(leftovers, function(partner){return partner.amount > 0}) : filter(leftovers, function(partner){return partner.amount < 0})
+      var partners = (leftover === 0) ? [] : (leftover < 0) ? $filter('filter')(leftovers, function(partner){return partner.amount > 0}) : $filter('filter')(leftovers, function(partner){return partner.amount < 0})
       partners.sort(function(pa, ma){return Math.abs(ma.amount)-Math.abs(pa.amount)})
       return { leftover: leftover, participants: partners }
     },
     mine: function(pending) {
       var lname = pending.nick.toLowerCase()
       var pendops = pendings[pending.uuid].operations
-      var credits = filter(pendops, function(operation){return operation.from.toLowerCase() === lname})
-      credits = transform(credits, function(opa){return operation(opa.tid, opa.ts, opa.from, opa.amount, transform(filter(pendops, function(oma){return (opa.tid === oma.tid) && (oma.from === pending.name)}), function(oma){return oma.to}).join(", "))})
-      var debits = filter(pendops, function(operation){return operation.to.toLowerCase() === lname})
-      debits = transform(debits, function(opa){return operation(opa.tid, opa.ts, transform(filter(pendops, function(oma){return (opa.tid === oma.tid) && (oma.to === pending.name)}), function(oma){return oma.from}).join(", "), opa.amount, opa.to)})
+      var credits = $filter('filter')(pendops, function(operation){return operation.from.toLowerCase() === lname})
+      credits = transform(credits, function(opa){return operation(opa.tid, opa.ts, opa.from, opa.amount, transform($filter('filter')(pendops, function(oma){return (opa.tid === oma.tid) && (oma.from === pending.name)}), function(oma){return oma.to}).join(", "))})
+      var debits = $filter('filter')(pendops, function(operation){return operation.to.toLowerCase() === lname})
+      debits = transform(debits, function(opa){return operation(opa.tid, opa.ts, transform($filter('filter')(pendops, function(oma){return (opa.tid === oma.tid) && (oma.to === pending.name)}), function(oma){return oma.from}).join(", "), opa.amount, opa.to)})
       var filtered = credits.concat(debits)
       filtered.sort(function(opa, oma) {return opa.ts < oma.ts})
       return filtered
@@ -188,9 +194,9 @@ angular.module('pendura.services', [])
     activate: function(active, uuid, nicks) {
       var pending = pendings[uuid]
       if (undefined === pending.selfie) {
-        var nick = filter(nicks, function(nick){return nick.uuid === uuid})[0].nick
+        var nick = $filter('filter')(nicks, function(nick){return nick.uuid === uuid})[0].nick
         var lname = nick.toLowerCase()
-        var existing = filter(pending.partners, function(partner){return partner.nick.toLowerCase() === lname})
+        var existing = $filter('filter')(pending.partners, function(partner){return partner.nick.toLowerCase() === lname})
         if (!nick || existing.length || lname === pending.name.toLowerCase()) {
           return false// invalid nick
         }
@@ -214,41 +220,35 @@ angular.module('pendura.services', [])
     },
     pendings: function(pending) {
       var filtered = []
-      for (uuid in pendings) {
-        if (pendings.hasOwnProperty(uuid)) {
-          var joined = (undefined !== pendings[uuid].selfie)
-          var nick = ''
-          var tip = ''
-          if (joined) {
-            nick = pendings[uuid].selfie.nick
-          } else {
-            var names = transform(pendings[uuid].partners, function(partner){return partner.nick})
-            names.push(pendings[uuid].name)
-            tip = "≠ " + names.join(", ")
-          }
-          filtered.push({uuid: uuid, name: pendings[uuid].name, join: joined, nick: nick, tip: tip})
+      angular.forEach(pendings, function(pending, uuid) {
+        var joined = (undefined !== pending.selfie)
+        var nick = ''
+        var tip = ''
+        if (joined) {
+          nick = pending.selfie.nick
+        } else {
+          var names = []
+          angular.forEach(pending.partners, function(partner){return this.push(partner.nick)}, names)
+          names.push(pending.name)
+          tip = "≠ " + names.join(", ")
         }
-      }
+        this.push({uuid: uuid, name: pending.name, join: joined, nick: nick, tip: tip})
+      }, filtered)
       return filtered
     },
     transaction: function(pending, ts, transaction) {
-      var lname = pending.nick.toLowerCase()
       var pendops = pendings[pending.uuid].operations
       var selfie = pendings[pending.uuid].selfie
       var tid = selfie.nick+'¦'+(++selfie.tick)
       var ops = []
       var sum = 0
-      for(property in transaction) {
-        if (transaction.hasOwnProperty(property)) {
-          var amount = 1* (100 * transaction[property]).toFixed(0)
-          ops.push(operation(tid, ts, pending.name, amount, property))
-          sum += amount
-        }
-      }
+      angular.forEach(transaction, function(value, property) {
+        var amount = 1* (100 * value).toFixed(0)
+        this.push(operation(tid, ts, pending.name, amount, property))
+        sum += amount
+      }, ops)
       ops.push(operation(tid, ts, selfie.nick, sum, pending.name))
-      for (var i = 0; i < ops.length; i++) {
-        pendops.unshift(ops[i])
-      }
+      angular.forEach(ops, function(op, index) {this.unshift(op)}, pendops)
       return pendops.length
     },
     load: function($q, $cordovaFile) {
@@ -283,4 +283,4 @@ angular.module('pendura.services', [])
       return q.promise
     }
   }
-})
+}])
