@@ -16,7 +16,7 @@
 .item-input-inset .item-input-wrapper input{position:relative;left:0;height:28px}
 .item-input-wrapper input[ng-readonly]::input-placeholder{font-size:80%}
 .item-radio .radio-icon{padding:8px}
-.col-50.item-input-wrapper{margin-right:2%;max-width:48%}
+.input-label.item-input-wrapper{margin-right:2%;max-width:48%}
 .padding-none{padding:0}
 .item h2{margin-bottom:0}
 .tab-item .icon{margin:1px auto 0;height:30px}

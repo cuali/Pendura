@@ -12,109 +12,42 @@ angular.module('pendura.services', [])
       if (arguments.length > 1 && (typeof defaultValue == 'string' || defaultValue instanceof String)) {
         return $window.localStorage[key] || defaultValue
       } else {
-        return JSON.parse($window.localStorage[key] || '{}')
+        var value = $window.localStorage[key]
+        if (arguments.length > 1 && undefined == value) {
+          return defaultValue
+        } else {
+          return JSON.parse(value || '{}')
+        }
       }
     }
   }
 }])
 .factory('Operations', ['$filter', function($filter) {
+  var pendings = {}
+
   // Some fake testing data
-  var pendings = {
-    'CAFE-BABE-0123456789' : {
-      name: 'Verde',
-      selfie: {nick:'Alain',tick:3},
-      partners: [{nick:'Alano',tick:1},{nick:'Marcos',tick:1},{nick:'Neto',tick:0}],
+  var fakedata = {
+    'FEED-BABE-CAFE-FACE-DEAD-BEEF' : {
+      name: 'Pendura',
+      //selfie: {nick:'Alain',tick:0},
+      partners: [{nick:'Regina',tick:1},{nick:'Amnésia',tick:0}],
       operations: [{
-          ts: '2015-01-25T13:12:25.123',
-          tid: 'Marcos¦1',
-          from: 'Verde',
-          to: 'Alain',
-          amount: 1042
-        }, {
-          ts: '2015-01-25T13:12:25.123',
-          tid: 'Marcos¦1',
-          from: 'Verde',
-          to: 'Neto',
-          amount: 500
-        }, {
-          ts: '2015-01-25T13:12:25.123',
-          tid: 'Marcos¦1',
-          from: 'Marcos',
-          to: 'Verde',
-          amount: 1542
-        }, {
-          ts: '2015-01-23T13:12:25.234',
-          tid: 'Alano¦1',
-          from: 'Verde',
-          to: 'Alain',
-          amount: 482
-        }, {
-          ts: '2015-01-23T13:12:25.234',
-          tid: 'Alano¦1',
-          from: 'Verde',
-          to: 'Marcos',
-          amount: 848
-        }, {
-          ts: '2015-01-23T13:12:25.234',
-          tid: 'Alano¦1',
-          from: 'Alano',
-          to: 'Verde',
-          amount: 1330
-        }, {
-          ts: '2015-01-21T13:12:25.345',
-          tid: 'Alain¦1',
-          from: 'Verde',
-          to: 'Neto',
-          amount: 1200
-        }, {
-          ts: '2015-01-21T13:12:25.345',
-          tid: 'Alain¦1',
-          from: 'Verde',
-          to: 'Alano',
-          amount: 300
-        }, {
-          ts: '2015-01-21T13:12:25.345',
-          tid: 'Alain¦1',
-          from: 'Alain',
-          to: 'Verde',
-          amount: 1500
-        }]
-    },
-    'DEAD-BEEF-9876543210' : {
-      name: 'Tupi',
-      selfie: {nick:'Alain',tick:0},
-      partners: [{nick:'Marcos',tick:1}],
-      operations: [{
-          ts: '2015-01-28T19:12:25.123',
-          tid: 'Marcos¦1',
-          from: 'Marcos',
-          to: 'Tupi',
-          amount: 5042
-        }, {
-          ts: '2015-01-28T19:12:25.123',
-          tid: 'Marcos¦1',
-          from: 'Tupi',
-          to: 'Alain',
-          amount: 5042
-        }]
-    },
-    'FEED-FACE-5647382910' : {
-      name: 'Facebook',
-      partners: [{nick:'Regina',tick:1},{nick:'Flávia',tick:1},{nick:'Isadora',tick:0}],
-      operations: []
+        ts: '2015-01-28T19:12:25.123',
+        tid: 'Regina¦1',
+        from: 'Regina',
+        to: 'Pendura',
+        amount: 1234
+      }, {
+        ts: '2015-01-28T19:12:25.123',
+        tid: 'Regina¦1',
+        from: 'Pendura',
+        to: 'Amnésia',
+        amount: 1234
+      }]
     }
   }
 
-// don't forget to merge transactions older than 60 days into one summary transaction
-
-  var transform = function(elements, transformer) {
-    var transformed = []
-    for (var i = 0; i< elements.length; i++) {
-      var mapped = transformer(elements[i])
-      transformed.push(mapped)
-    }
-    return transformed
-  }
+// don't forget to merge transactions older than 40 days into one summary transaction
 
   var sumup = function(pendops, extractor) {
     pendops.sort(function(opa, oma){return extractor(opa) < extractor(oma)})
@@ -138,12 +71,8 @@ angular.module('pendura.services', [])
 
   var merge = function(creditors, debitors) {
     var keys = []
-    for (var i = 0; i < creditors.length; i++) {
-      keys.push(creditors[i].nick)
-    }
-    for (var i = 0; i < debitors.length; i++) {
-      keys.push(debitors[i].nick)
-    }
+    angular.forEach(creditors, function(creditor, index) {this.push(creditor.nick)}, keys)
+    angular.forEach(debitors, function(debitor, index) {this.push(debitor.nick)}, keys)
     keys.sort()
     for (var i = keys.length -1; i > 0; ) {
       if (keys[i] === keys[i -1]) {
@@ -183,10 +112,12 @@ angular.module('pendura.services', [])
     mine: function(pending) {
       var lname = pending.nick.toLowerCase()
       var pendops = pendings[pending.uuid].operations
-      var credits = $filter('filter')(pendops, function(operation){return operation.from.toLowerCase() === lname})
-      credits = transform(credits, function(opa){return operation(opa.tid, opa.ts, opa.from, opa.amount, transform($filter('filter')(pendops, function(oma){return (opa.tid === oma.tid) && (oma.from === pending.name)}), function(oma){return oma.to}).join(", "))})
-      var debits = $filter('filter')(pendops, function(operation){return operation.to.toLowerCase() === lname})
-      debits = transform(debits, function(opa){return operation(opa.tid, opa.ts, transform($filter('filter')(pendops, function(oma){return (opa.tid === oma.tid) && (oma.to === pending.name)}), function(oma){return oma.from}).join(", "), opa.amount, opa.to)})
+      var credops = $filter('filter')(pendops, function(operation){return operation.from.toLowerCase() === lname})
+      var debops = $filter('filter')(pendops, function(operation){return operation.to.toLowerCase() === lname})
+      var credits = []
+      angular.forEach(credops, function(opa){var to = []; angular.forEach(pendops, function(oma){if ((opa.tid === oma.tid) && (oma.from === pending.name)) this.push(oma.to)}, to); this.push(operation(opa.tid, opa.ts, opa.from, opa.amount, to.join(", ")))}, credits)
+      var debits = []
+      angular.forEach(debops, function(opa){var from = []; angular.forEach(pendops, function(oma){if ((opa.tid === oma.tid) && (oma.to === pending.name)) this.push(oma.from)}, from); this.push(operation(opa.tid, opa.ts, from.join(", "), opa.amount, opa.to))}, debits)
       var filtered = credits.concat(debits)
       filtered.sort(function(opa, oma) {return opa.ts < oma.ts})
       return filtered
@@ -251,36 +182,13 @@ angular.module('pendura.services', [])
       angular.forEach(ops, function(op, index) {this.unshift(op)}, pendops)
       return pendops.length
     },
-    load: function($q, $cordovaFile) {
-      var q = $q.defer()
-      var directory = (cordova) ? cordova.file.dataDirectory : "" // http://ngcordova.com/docs/plugins/file/
-      $cordovaFile.checkDir(directory, '').then(function(result) {
-        $cordovaFile.checkFile(directory, 'pendings.json').then(function(result) {
-            // Success!
-              q.resolve(result)
-        }, function(err) {
-          $cordovaFile.createFile(directory, '/pendings.json', true).then(function(result) {
-            var blob = new Blob(['{',"'active':{},","'pendings':{}",'}'] , {type: 'text/plain'})
-            $cordovaFile.writeFile(directory, 'pendings.json', blob, true).then(function(result) {
-              q.resolve(result)
-            }, function(err) {
-              q.reject({uuid:'FACE-CAFE-FEED-BABE-DEAD-BEEF',nick:'Missing file',name:directory+'/pendings.json'})
-            })
-          }, function(err) {
-            q.reject({uuid:'FACE-CAFE-FEED-BABE-DEAD-BEEF',nick:'Missing file',name:directory+'/pendings.json'})
-          })
-        })
-      }, function(error) {
-          console.log(error)
-        $cordovaFile.createDir(directory, '', false).then(function(result) {
-            // Success! ===> checkFile
-              q.resolve(result)
-        }, function(err) {
-          console.log(err)
-          q.reject({uuid:'FACE-CAFE-FEED-BABE-DEAD-BEEF',nick:'Missing directory',name:directory})
-        })
-      })
-      return q.promise
+    retrieve: function($localstorage) {
+      pendings = $localstorage.get('Pendura.pendings', fakedata)
+      return $localstorage.get('Pendura.active', { uuid: 'FEED-BABE-CAFE-FACE-DEAD-BEEF', name: 'Pendura', nick: 'você' })
+    },
+    keep: function($localstorage, pending) {
+      $localstorage.set('Pendura.active', pending)
+      $localstorage.set('Pendura.pendings', pendings)
     }
   }
 }])
