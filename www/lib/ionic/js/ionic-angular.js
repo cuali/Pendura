@@ -2,7 +2,7 @@
  * Copyright 2014 Drifty Co.
  * http://drifty.com/
  *
- * Ionic, v1.0.0-beta.14-nightly-1025
+ * Ionic, v1.0.0-beta.14-nightly-1060
  * A powerful HTML5 mobile app framework.
  * http://ionicframework.com/
  *
@@ -1492,7 +1492,8 @@ function($rootScope, $state, $location, $window, $timeout, $ionicViewSwitcher, $
               // the forward has a history
               for (x = tmp.stack.length - 1; x >= forwardView.index; x--) {
                 // starting from the end destroy all forwards in this history from this point
-                tmp.stack[x].destroy();
+                var stack_x = tmp.stack[x];
+                stack_x && stack_x.destroy && stack_x.destroy();
                 tmp.stack.splice(x);
               }
               historyId = forwardView.historyId;
@@ -2381,14 +2382,14 @@ IonicModule
     }
 
     function enter(ctrlA, ctrlB, step) {
-      if (!ctrlA) return;
+      if (!ctrlA || !ctrlB) return;
       var titleX = (ctrlA.titleTextX() + ctrlA.titleWidth()) * (1 - step);
       var backTextX = (ctrlB && (ctrlB.titleTextX() - ctrlA.backButtonTextLeft()) * (1 - step)) || 0;
       setStyles(ctrlA, step, titleX, backTextX);
     }
 
     function leave(ctrlA, ctrlB, step) {
-      if (!ctrlA) return;
+      if (!ctrlA || !ctrlB) return;
       var titleX = (-(ctrlA.titleTextX() - ctrlB.backButtonTextLeft()) - (ctrlA.titleLeftRight())) * step;
       setStyles(ctrlA, 1 - step, titleX, 0);
     }
@@ -2639,7 +2640,7 @@ var LOADING_SET_DEPRECATED = '$ionicLoading instance.setContent() has been depre
  */
 IonicModule
 .constant('$ionicLoadingConfig', {
-  template: '<i class="icon ion-loading-d"></i>'
+  template: '<ion-spinner></ion-spinner>'
 })
 .factory('$ionicLoading', [
   '$ionicLoadingConfig',
@@ -4310,10 +4311,18 @@ IonicModule
   /**
    * @ngdoc method
    * @name $ionicScrollDelegate#freezeScroll
-   * @description Does not allow the scrollView to scroll in either x or y.
+   * @description Does not allow this scroll view to scroll either x or y.
+   * @param {boolean=} shouldFreeze Should this scroll view be prevented from scrolling or not.
    * @returns {object} If the scroll view is being prevented from scrolling or not.
    */
   'freezeScroll',
+  /**
+   * @ngdoc method
+   * @name $ionicScrollDelegate#freezeAllScrolls
+   * @description Does not allow any of the app's scroll views to scroll either x or y.
+   * @param {boolean=} shouldFreeze Should all app scrolls be prevented from scrolling or not.
+   */
+  'freezeAllScrolls',
   /**
    * @ngdoc method
    * @name $ionicScrollDelegate#getScrollView
@@ -5168,6 +5177,12 @@ function($timeout, $document, $q, $ionicClickBlock, $ionicConfig, $ionicNavBarDe
               if (step == 'after') {
                 scope.$emit('$ionicView.leave', leavingData);
               }
+            }
+
+          } else if (scope && leavingData && leavingData.viewId) {
+            scope.$emit('$ionicNavView.' + step + 'Leave', leavingData);
+            if (step == 'after') {
+              scope.$emit('$ionicNavView.leave', leavingData);
             }
           }
         },
@@ -6506,7 +6521,14 @@ function($scope, $element, $attrs, $compile, $controller, $ionicNavBarDelegate, 
     $element.data('$uiView', viewData);
 
     var deregisterInstance = $ionicNavViewDelegate._registerInstance(self, $attrs.delegateHandle);
-    $scope.$on('$destroy', deregisterInstance);
+    $scope.$on('$destroy', function() {
+      deregisterInstance();
+
+      // ensure no scrolls have been left frozen
+      if (self.isSwipeFreeze) {
+        $ionicScrollDelegate.freezeAllScrolls(false);
+      }
+    });
 
     $scope.$on('$ionicHistory.deselect', self.cacheCleanup);
 
@@ -6637,6 +6659,11 @@ function($scope, $element, $attrs, $compile, $controller, $ionicNavBarDelegate, 
     }
 
     navSwipeAttr('');
+
+    // ensure no scrolls have been left frozen
+    if (self.isSwipeFreeze) {
+      $ionicScrollDelegate.freezeAllScrolls(false);
+    }
   };
 
 
@@ -6764,7 +6791,7 @@ function($scope, $element, $attrs, $compile, $controller, $ionicNavBarDelegate, 
 
       if (!windowWidth) windowWidth = window.innerWidth;
 
-      freezeScrolls(true);
+      self.isSwipeFreeze = $ionicScrollDelegate.freezeAllScrolls(true);
 
       var registerData = {
         direction: 'back'
@@ -6848,7 +6875,7 @@ function($scope, $element, $attrs, $compile, $controller, $ionicNavBarDelegate, 
 
       windowWidth = viewTransition = dragPoints = null;
 
-      freezeScrolls(false);
+      self.isSwipeFreeze = $ionicScrollDelegate.freezeAllScrolls(false);
     }
 
     function getDragX(ev) {
@@ -6868,13 +6895,6 @@ function($scope, $element, $attrs, $compile, $controller, $ionicNavBarDelegate, 
       self.element = viewTransition = associatedNavBarCtrl = null;
     });
   };
-
-
-  function freezeScrolls(freeze) {
-    forEach($ionicScrollDelegate._instances, function(instance) {
-      instance.freezeScroll(freeze);
-    });
-  }
 
 
   function navSwipeAttr(val) {
@@ -7143,14 +7163,14 @@ IonicModule
       ionic.on('touchmove', handleTouchmove, scrollChild);
       ionic.on('touchend', handleTouchend, scrollChild);
       ionic.on('scroll', handleScroll, scrollParent);
+
+      // cleanup when done
+      $scope.$on('$destroy', destroy);
     };
 
-
-    $scope.$on('$destroy', destroy);
-
     function destroy() {
-      ionic.off('dragdown', handleTouchmove, scrollChild);
-      ionic.off('dragend', handleTouchend, scrollChild);
+      ionic.off('touchmove', handleTouchmove, scrollChild);
+      ionic.off('touchend', handleTouchend, scrollChild);
       ionic.off('scroll', handleScroll, scrollParent);
       scrollParent = null;
       scrollChild = null;
@@ -7371,9 +7391,12 @@ function($scope,
     });
   };
 
-  self.freezeScroll = function(shouldFreeze) {
-    if (arguments.length) scrollView.options.freeze = shouldFreeze;
-    return scrollView.options.freeze;
+  self.freezeScroll = scrollView.freeze;
+
+  self.freezeAllScrolls = function(shouldFreeze) {
+    for (var i = 0; i < $ionicScrollDelegate._instances.length; i++) {
+      $ionicScrollDelegate._instances[i].freezeScroll(shouldFreeze);
+    }
   };
 
 
@@ -7399,7 +7422,8 @@ IonicModule
   '$ionicPlatform',
   '$ionicBody',
   '$ionicHistory',
-function($scope, $attrs, $ionicSideMenuDelegate, $ionicPlatform, $ionicBody, $ionicHistory) {
+  '$ionicScrollDelegate',
+function($scope, $attrs, $ionicSideMenuDelegate, $ionicPlatform, $ionicBody, $ionicHistory, $ionicScrollDelegate) {
   var self = this;
   var rightShowing, leftShowing, isDragging;
   var startX, lastX, offsetX, isAsideExposed;
@@ -7541,7 +7565,19 @@ function($scope, $attrs, $ionicSideMenuDelegate, $ionicPlatform, $ionicBody, $io
     // add the CSS class "menu-open" if the percentage does not
     // equal 0, otherwise remove the class from the body element
     $ionicBody.enableClass((percentage !== 0), 'menu-open');
+
+    freezeAllScrolls(false);
   };
+
+  function freezeAllScrolls(shouldFreeze) {
+    if (shouldFreeze && !self.isScrollFreeze) {
+      $ionicScrollDelegate.freezeAllScrolls(shouldFreeze);
+
+    } else if (!shouldFreeze && self.isScrollFreeze) {
+      $ionicScrollDelegate.freezeAllScrolls(false);
+    }
+    self.isScrollFreeze = shouldFreeze;
+  }
 
   /**
    * Open the menu the given pixel amount.
@@ -7690,6 +7726,8 @@ function($scope, $attrs, $ionicSideMenuDelegate, $ionicPlatform, $ionicBody, $io
 
   // End a drag with the given event
   self._endDrag = function(e) {
+    freezeAllScrolls(false);
+
     if (isAsideExposed) return;
 
     if (isDragging) {
@@ -7727,6 +7765,7 @@ function($scope, $attrs, $ionicSideMenuDelegate, $ionicPlatform, $ionicBody, $io
 
     if (isDragging) {
       self.openAmount(offsetX + (lastX - startX));
+      freezeAllScrolls(true);
     }
   };
 
@@ -7808,6 +7847,9 @@ function($scope, $attrs, $ionicSideMenuDelegate, $ionicPlatform, $ionicBody, $io
       self.content.element = null;
       self.content = null;
     }
+
+    // ensure scrolls are unfrozen
+    freezeAllScrolls(false);
   });
 
   self.initialize({
@@ -9161,7 +9203,7 @@ IonicModule
 }]);
 
 
-var GESTURE_DIRECTIVES = 'onHold onTap onTouch onRelease onDrag onDragUp onDragRight onDragDown onDragLeft onSwipe onSwipeUp onSwipeRight onSwipeDown onSwipeLeft'.split(' ');
+var GESTURE_DIRECTIVES = 'onHold onTap onDoubleTap onTouch onRelease onDrag onDragUp onDragRight onDragDown onDragLeft onSwipe onSwipeUp onSwipeRight onSwipeDown onSwipeLeft'.split(' ');
 
 GESTURE_DIRECTIVES.forEach(function(name) {
   IonicModule.directive(name, gestureDirective(name));
@@ -9197,6 +9239,22 @@ GESTURE_DIRECTIVES.forEach(function(name) {
  * @usage
  * ```html
  * <button on-tap="onTap()" class="button">Test</button>
+ * ```
+ */
+
+
+/**
+ * @ngdoc directive
+ * @name onDoubleTap
+ * @module ionic
+ * @restrict A
+ *
+ * @description
+ * Double tap touch at a location.
+ *
+ * @usage
+ * ```html
+ * <button on-double-tap="onDoubleTap()" class="button">Test</button>
  * ```
  */
 
@@ -10198,15 +10256,16 @@ function($timeout) {
     controller: '$ionicList',
     compile: function($element, $attr) {
       var listEl = jqLite('<div class="list">')
-        .append( $element.contents() )
+        .append($element.contents())
         .addClass($attr.type);
+
       $element.append(listEl);
 
       return function($scope, $element, $attrs, ctrls) {
         var listCtrl = ctrls[0];
         var scrollCtrl = ctrls[1];
 
-        //Wait for child elements to render...
+        // Wait for child elements to render...
         $timeout(init);
 
         function init() {
@@ -10218,9 +10277,9 @@ function($timeout) {
             onReorder: function(el, oldIndex, newIndex) {
               var itemScope = jqLite(el).scope();
               if (itemScope && itemScope.$onReorder) {
-                //Make sure onReorder is called in apply cycle,
-                //but also make sure it has no conflicts by doing
-                //$evalAsync
+                // Make sure onReorder is called in apply cycle,
+                // but also make sure it has no conflicts by doing
+                // $evalAsync
                 $timeout(function() {
                   itemScope.$onReorder(oldIndex, newIndex);
                 });
@@ -10232,7 +10291,7 @@ function($timeout) {
           });
 
           $scope.$on('$destroy', function() {
-            if(listView) {
+            if (listView) {
               listView.deregister && listView.deregister();
               listView = null;
             }
@@ -12252,6 +12311,8 @@ IonicModule
  * @param {expression=} on-select Called when this tab is selected.
  * @param {expression=} on-deselect Called when this tab is deselected.
  * @param {expression=} ng-click By default, the tab will be selected on click. If ngClick is set, it will not.  You can explicitly switch tabs using {@link ionic.service:$ionicTabsDelegate#select $ionicTabsDelegate.select()}.
+ * @param {expression=} hidden Whether the tab is to be hidden or not.
+ * @param {expression=} disabled Whether the tab is to be disabled or not.
  */
 IonicModule
 .directive('ionTab', [
@@ -12284,6 +12345,7 @@ function($compile, $ionicConfig, $ionicBind, $ionicViewSwitcher) {
         attrStr('badge', attr.badge) +
         attrStr('badge-style', attr.badgeStyle) +
         attrStr('hidden', attr.hidden) +
+        attrStr('disabled', attr.disabled) +
         attrStr('class', attr['class']) +
         '></ion-tab-nav>';
 
@@ -12427,7 +12489,7 @@ IonicModule
     require: ['^ionTabs', '^ionTab'],
     template:
     '<a ng-class="{\'tab-item-active\': isTabActive(), \'has-badge\':badge, \'tab-hidden\':isHidden()}" ' +
-      ' class="tab-item">' +
+      ' ng-disabled="disabled()" class="tab-item">' +
       '<span class="badge {{badgeStyle}}" ng-if="badge">{{badge}}</span>' +
       '<i class="icon {{getIconOn()}}" ng-if="getIconOn() && isTabActive()"></i>' +
       '<i class="icon {{getIconOff()}}" ng-if="getIconOff() && !isTabActive()"></i>' +
@@ -12440,6 +12502,7 @@ IonicModule
       iconOff: '@',
       badge: '=',
       hidden: '@',
+      disabled: '&',
       badgeStyle: '@',
       'class': '@'
     },
@@ -12489,7 +12552,7 @@ IonicModule
  * @module ionic
  * @delegate ionic.service:$ionicTabsDelegate
  * @restrict E
- * @codepen KbrzJ
+ * @codepen odqCz
  *
  * @description
  * Powers a multi-tabbed interface with a Tab Bar and a set of "pages" that can be tabbed
@@ -12566,6 +12629,18 @@ function($ionicTabsDelegate, $ionicConfig, $ionicHistory) {
           $scope.$hasTabs = !isTabsTop && !isHidden;
           $scope.$hasTabsTop = isTabsTop && !isHidden;
         });
+
+        function emitLifecycleEvent(ev, data) {
+          ev.stopPropagation();
+          var selectedTab = tabsCtrl.selectedTab();
+          if (selectedTab) {
+            selectedTab.$emit(ev.name.replace('NavView', 'View'), data);
+          }
+        }
+
+        $scope.$on('$ionicNavView.beforeLeave', emitLifecycleEvent);
+        $scope.$on('$ionicNavView.afterLeave', emitLifecycleEvent);
+        $scope.$on('$ionicNavView.leave', emitLifecycleEvent);
 
         $scope.$on('$destroy', function() {
           // variable to inform child tabs that they're all being blown away

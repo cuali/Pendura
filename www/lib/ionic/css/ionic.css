@@ -2,7 +2,7 @@
  * Copyright 2014 Drifty Co.
  * http://drifty.com/
  *
- * Ionic, v1.0.0-beta.14-nightly-1025
+ * Ionic, v1.0.0-beta.14-nightly-1060
  * A powerful HTML5 mobile app framework.
  * http://ionicframework.com/
  *
@@ -2612,9 +2612,6 @@ body.grade-b, body.grade-c {
   -webkit-transform-origin: left top;
   transform-origin: left top; }
 
-::-webkit-scrollbar {
-  display: none; }
-
 .scroll-bar {
   position: absolute;
   z-index: 9999; }
@@ -5222,7 +5219,7 @@ a.item-content {
   width: 100%;
   box-shadow: 0px 0px 10px 0px #aaa; }
   .item-reordering .item-reorder {
-    z-index: 1; }
+    z-index: 9; }
 
 .item-placeholder {
   opacity: 0.7; }
@@ -6928,6 +6925,11 @@ a.button {
   -ms-flex-wrap: wrap;
   flex-wrap: wrap; }
 
+.row-no-padding {
+  padding: 0; }
+  .row-no-padding > .col {
+    padding: 0; }
+
 .row + .row {
   margin-top: -5px;
   padding-top: 0; }
@@ -7289,6 +7291,18 @@ a.button {
 
 .padding-left, .padding-horizontal {
   padding-left: 10px; }
+
+/**
+ * Scrollable iFrames
+ * --------------------------------------------------
+ */
+.iframe-wrapper {
+  position: fixed;
+  -webkit-overflow-scrolling: touch;
+  overflow: scroll; }
+  .iframe-wrapper iframe {
+    height: 100%;
+    width: 100%; }
 
 /**
  * Rounded
