@@ -6,7 +6,7 @@
         <div class="col col-50 item-input-wrapper">
             <input ng-model='pending.nick' type="text" ng-readonly='pending.join' placeholder='{{pending.tip}}' />
         </div>
-        <label class="col col-10">
+        <label class="col col-10 col-center">
           <input ng-model='uuid' ng-value='pending.uuid' type="radio" name="active" ng-checked='(active.uuid === pending.uuid)' ng-change='activate(pending.uuid)'
               ng-disabled='"" == pending.nick' />
           <i class="radio-icon ion-checkmark"></i>
@@ -19,7 +19,7 @@
           <div class="col col-50 item-input-wrapper">
             <input ng-model='future.nick' type="text" placeholder='Novo apelido' />
           </div>
-          <label class="col col-10">
+          <label class="col col-10 col-right">
             <button class="button button-clear button-dark icon ion-plus-circled" ng-click='create(future)'
                 ng-disabled='"" == future.name || "" == future.nick || future.name.toLowerCase() == future.nick.toLowerCase()'></button>
           </label>

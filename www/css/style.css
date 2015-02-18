@@ -3,7 +3,7 @@
 .col-10.toggle{text-align:center}
 .col-left{text-align:left}
 .col-right{text-align:right}
-.col-center{text-align:center}
+.col-center{text-align:center;position:relative}
 .col.input-label{margin-right:2%}
 .row-top:first-child{padding-bottom:0;margin-bottom:-20px}
 .item-complex .item-content{padding-right:16px}
@@ -16,7 +16,7 @@
 .item-input-inset .item-input-wrapper{margin-top:-6px}
 .item-input-inset .item-input-wrapper input{position:relative;left:0;height:28px}
 .item-input-wrapper input[ng-readonly]::input-placeholder{font-size:80%}
-.item-radio .radio-icon{padding:8px}
+.item-radio .radio-icon{padding:0 11%;margin-top:-14px}
 .padding-none{padding:0}
 .item h2{margin-bottom:0}
 .tab-item .icon{margin:1px auto 0;height:30px}
