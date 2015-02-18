@@ -4,6 +4,7 @@
 .col-left{text-align:left}
 .col-right{text-align:right}
 .col-center{text-align:center}
+.col.input-label{margin-right:2%}
 .row-top:first-child{padding-bottom:0;margin-bottom:-20px}
 .item-complex .item-content{padding-right:16px}
 .list-inset .item.item-input input[type='number'],
@@ -16,7 +17,6 @@
 .item-input-inset .item-input-wrapper input{position:relative;left:0;height:28px}
 .item-input-wrapper input[ng-readonly]::input-placeholder{font-size:80%}
 .item-radio .radio-icon{padding:8px}
-.input-label.item-input-wrapper{margin-right:2%;max-width:48%}
 .padding-none{padding:0}
 .item h2{margin-bottom:0}
 .tab-item .icon{margin:1px auto 0;height:30px}

@@ -30,16 +30,16 @@ angular.module('pendura.services', [])
     'FEED-BABE-CAFE-FACE-DEAD-BEEF' : {
       name: 'Pendura',
       //selfie: {nick:'Alain',tick:0},
-      partners: [{nick:'Regina',tick:1},{nick:'Amnésia',tick:0}],
+      partners: [{nick:'Oubli',tick:1},{nick:'Amnésia',tick:0}],
       operations: [{
         ts: '2015-01-28T19:12:25.123',
-        tid: 'Regina¦1',
-        from: 'Regina',
+        tid: 'Oubli¦1',
+        from: 'Oubli',
         to: 'Pendura',
         amount: 1234
       }, {
         ts: '2015-01-28T19:12:25.123',
-        tid: 'Regina¦1',
+        tid: 'Oubli¦1',
         from: 'Pendura',
         to: 'Amnésia',
         amount: 1234
