@@ -12,9 +12,9 @@
         <ion-list>
           <ion-item class="item-remove-animate item-icon-right padding-none" ng-repeat="participant in balance.participants" type="item-text-wrap">
             <div class='row row-center'>
-              <div class='col col-67 col-left button button-large button-clear button-dark'>{{participant.nick}}</div>
-              <div class='col col-25 col-right button button-clear button-energized'>{{participant.amount / 100  | currency}}</div>
-              <div class='col col-right'><i class="icon ion-card icon-accessory"></i></div>
+              <div class='col col-50 col-left button button-clear button-dark'>{{participant.nick}}</div>
+              <div class='col col-33 col-right button button-large button-clear button-energized'>{{participant.amount / 100  | currency}}</div>
+              <div class='col col-right'><i class="icon ion-heart-broken icon-accessory"></i></div>
             </div>
           </ion-item>
         </ion-list>

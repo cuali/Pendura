@@ -2,10 +2,12 @@ angular.module('pendura.services', [])
 .factory('$localstorage', ['$window', function($window) {
   return {
     set: function(key, value) {
-      if (typeof value == 'string' || value instanceof String) {
-        $window.localStorage[key] = value
-      } else {
-        $window.localStorage[key] = JSON.stringify(value)
+      if ($window.localStorage) {
+        if (typeof value == 'string' || value instanceof String) {
+          $window.localStorage[key] = value
+        } else {
+          $window.localStorage[key] = JSON.stringify(value)
+        }
       }
     },
     get: function(key, defaultValue) {

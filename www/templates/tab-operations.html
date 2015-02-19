@@ -4,7 +4,7 @@
       <ion-item class="item-remove-animate" ng-repeat="operation in operations" type="item-text-wrap" href="#/tab/ops/{{operation.tid}}">
         <div class='row row-top item-icon-right'>
           <div class='col col-90 col-left button button-clear button-small button-calm'>{{operation.ts | date:'medium'}}</div>
-          <div class='col col-10 col-right button button-clear button-small'><i class="icon ion-heart-broken icon-accessory"></i></div>
+          <div class='col col-10 col-right button button-clear button-small'><i class="icon ion-card icon-accessory"></i></div>
         </div>
         <div class='row row-center'>
           <div class='col col-33 col-left button button-clear button-balanced'>{{operation.from}}</div>
@@ -12,7 +12,7 @@
           <div class='col col-right button button-clear button-energized'>{{operation.to}}</div>
         </div>
       </ion-item>
-      <ion-item ng-if='operations.length == 0'>Não foram encontradas operações para {{active.nick}} na {{active.name}}</ion-item>
+      <ion-item ng-if='operations.length == 0' type='item-text-wrap'>Não foram encontradas operações para {{active.nick}} na {{active.name}}</ion-item>
     </ion-list>
   </ion-content>
 </ion-view>

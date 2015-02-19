@@ -6,7 +6,7 @@
         <div class="col col-50 item-input-wrapper">
             <input ng-model='pending.nick' type="text" ng-readonly='pending.join' placeholder='{{pending.tip}}' />
         </div>
-        <label class="col col-10 col-center">
+        <label class="col col-10 col-right">
           <input ng-model='uuid' ng-value='pending.uuid' type="radio" name="active" ng-checked='(active.uuid === pending.uuid)' ng-change='activate(pending.uuid)'
               ng-disabled='"" == pending.nick' />
           <i class="radio-icon ion-checkmark"></i>
