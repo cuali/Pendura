@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'pendura.services' is found in services.js
 // 'pendura.controllers' is found in controllers.js
-angular.module('pendura', ['ionic', 'ngCordova', 'uuid4', 'pendura.controllers', 'pendura.services'])
+angular.module('pendura', ['ionic', 'ngCordova', 'ngTouch', 'uuid4', 'pendura.controllers', 'pendura.services'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -21,7 +21,8 @@ angular.module('pendura', ['ionic', 'ngCordova', 'uuid4', 'pendura.controllers',
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($compileProvider, $stateProvider, $urlRouterProvider) {
+  $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|ghttps?|ms-appx|x-wmapp0):/) //WP8
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router

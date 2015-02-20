@@ -14,6 +14,7 @@
 
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.min.js"></script>
+    <script src="lib/angular-touch/angular-touch.min.js"></script>
     <script src="lib/angular-uuid4/angular-uuid4.min.js"></script>
 
     <!-- cordova script (this will be a 404 during development) -->
@@ -40,5 +41,15 @@
       have templates inline in this html file if you'd like).
     -->
     <ion-nav-view class='tabs-striped'></ion-nav-view>
+<script type="text/javascript">//WP8
+  window.console = {
+    log: function (str) { window.external.Notify(str) }
+  }
+  // output errors to console log
+  window.onerror = function (e) {
+    console.log("window.onerror ::" + JSON.stringify(e))
+  }
+  console.log("Installed console !")
+</script>
   </body>
 </html>
