@@ -4,22 +4,26 @@ angular.module('pendura.services', [])
     set: function(key, value) {
       if ($window.localStorage) {
         if (typeof value == 'string' || value instanceof String) {
-          $window.localStorage[key] = value
+          $window.localStorage.setItem(key, value)
         } else {
-          $window.localStorage[key] = JSON.stringify(value)
+          $window.localStorage.setItem(key, JSON.stringify(value))
         }
       }
     },
     get: function(key, defaultValue) {
-      if (arguments.length > 1 && (typeof defaultValue == 'string' || defaultValue instanceof String)) {
-        return $window.localStorage[key] || defaultValue
-      } else {
-        var value = $window.localStorage[key]
-        if (arguments.length > 1 && undefined == value) {
-          return defaultValue
+      if ($window.localStorage) {
+        if (arguments.length > 1 && (typeof defaultValue == 'string' || defaultValue instanceof String)) {
+          return $window.localStorage.getItem(key) || defaultValue
         } else {
-          return JSON.parse(value || '{}')
+          var value = $window.localStorage.getItem(key)
+          if (arguments.length > 1 && undefined == value) {
+            return defaultValue
+          } else {
+            return JSON.parse(value || '{}')
+          }
         }
+      } else {
+        return defaultValue
       }
     }
   }

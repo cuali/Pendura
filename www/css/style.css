@@ -20,3 +20,4 @@
 .padding-none{padding:0}
 .item h2{margin-bottom:0}
 .tab-item .icon{margin:1px auto 0;height:30px}
+body.platform-wp8{-ms-content-zooming:none}
