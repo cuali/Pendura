@@ -1,10 +1,10 @@
-<ion-view view-title="Operações para {{active.nick}} na {{active.name}}">
-  <ion-content class="padding-vertical">
-    <ion-list>
-      <ion-item class="item-remove-animate" ng-repeat="operation in operations" type="item-text-wrap" href="#/tab/ops/{{operation.tid}}">
+<ion-view view-title='Operações para {{active.nick}} na {{active.name}}'>
+  <ion-content class='padding-vertical'>
+    <ion-list type='list-inset'>
+      <ion-item class='item-remove-animate' ng-repeat='operation in operations' type='item-text-wrap' href='#/tab/ops/{{operation.tid}}'>
         <div class='row row-top item-icon-right'>
           <div class='col col-90 col-left button button-clear button-small button-calm'>{{operation.ts | date:'medium'}}</div>
-          <div class='col col-10 col-right button button-clear button-small'><i class="icon ion-card icon-accessory"></i></div>
+          <div class='col col-10 col-right button button-clear button-small'><i class='icon ion-card icon-accessory'></i></div>
         </div>
         <div class='row row-center'>
           <div class='col col-33 col-left button button-clear button-balanced'>{{operation.from}}</div>
