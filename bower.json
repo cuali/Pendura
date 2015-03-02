@@ -2,7 +2,7 @@
   "name": "pendura",
   "private": "true",
   "devDependencies": {
-    "ionic": "driftyco/ionic-bower#v1.0.0-beta.14-nightly-1060"
+    "ionic": "driftyco/ionic-bower#v1.0.0-beta.14-nightly-1098"
   },
   "dependencies": {
     "angular": ">1.3.12",
